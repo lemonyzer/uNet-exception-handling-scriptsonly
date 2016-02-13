@@ -17,7 +17,7 @@ using System.Collections;
  *
  **/    
 
-public class PlatformUserControl : NetworkBehaviour {
+public class PlatformUserControl : MonoBehaviour {
 	
 	// check who is the owner of the current character
 	// allow input if local photonnetwork.player == realOwner.owner
@@ -195,37 +195,47 @@ public class PlatformUserControl : NetworkBehaviour {
 		
 		//TODO static analogStick ?? muss nur einmal für diese klasse festgelegt werden
 		//TODO static stick ?? muss nur einmal für diese klasse festgelegt werden
-		
-		GameObject analogStickGO = GameObject.FindGameObjectWithTag(Tags.guiAnalogStick);
-		if(analogStickGO == null)
-		{
-			analogStickTexture = (GUITexture) Instantiate(prefabAnalogStickTexture);		// needed? pre-instantiete in hierachie?!
-			analogStickGO = analogStickTexture.gameObject;
-		}
-		else
-		{
-			analogStickTexture = analogStickGO.GetComponent<GUITexture>();
-		}
-		analogStickTextureWidth = analogStickTexture.pixelInset.width;
-		analogStickTextureHeight = analogStickTexture.pixelInset.height;
 
-		stickTexture = analogStickGO.transform.FindChild(Tags.guiStick).GetComponent<GUITexture>();
+        if (false)
+        {
+            InitTouch();
+        }
 		
-
-		stickTextureWidth = stickTexture.pixelInset.width;
-		stickTextureHeight = stickTexture.pixelInset.height;
 		
-		// Analog Stick ausblenden (aus sichtfeld verschieben)
-		analogStickTexture.pixelInset = new Rect(0,
-		                                         0,
-		                                         0,
-		                                         0);
-		// Stick ausblenden (aus sichtfeld verschieben)
-		stickTexture.pixelInset = new Rect(0,
-		                                   0,
-		                                   0,
-		                                   0);
 	}
+
+    void InitTouch ()
+    {
+        GameObject analogStickGO = GameObject.FindGameObjectWithTag(Tags.guiAnalogStick);
+        if (analogStickGO == null)
+        {
+            analogStickTexture = (GUITexture)Instantiate(prefabAnalogStickTexture);     // needed? pre-instantiete in hierachie?!
+            analogStickGO = analogStickTexture.gameObject;
+        }
+        else
+        {
+            analogStickTexture = analogStickGO.GetComponent<GUITexture>();
+        }
+        analogStickTextureWidth = analogStickTexture.pixelInset.width;
+        analogStickTextureHeight = analogStickTexture.pixelInset.height;
+
+        stickTexture = analogStickGO.transform.FindChild(Tags.guiStick).GetComponent<GUITexture>();
+
+
+        stickTextureWidth = stickTexture.pixelInset.width;
+        stickTextureHeight = stickTexture.pixelInset.height;
+
+        // Analog Stick ausblenden (aus sichtfeld verschieben)
+        analogStickTexture.pixelInset = new Rect(0,
+                                                 0,
+                                                 0,
+                                                 0);
+        // Stick ausblenden (aus sichtfeld verschieben)
+        stickTexture.pixelInset = new Rect(0,
+                                           0,
+                                           0,
+                                           0);
+    }
 	
 
 	/// <summary>
@@ -283,7 +293,7 @@ public class PlatformUserControl : NetworkBehaviour {
 
 		// Wenn jeder Character ein UserControl script hat muss abgefragt werden ob der Character dem lokalen Spieler gehört
         
-		if( NetFusion.isAuthoritative (isLocalPlayer, realOwner) )
+		if( NetFusion.isAuthoritative (null, realOwner) )
 		{
             
             if (simulate)
