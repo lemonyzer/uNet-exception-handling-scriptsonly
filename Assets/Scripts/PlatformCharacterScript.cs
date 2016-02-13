@@ -35,7 +35,7 @@ public class PlatformCharacterScript : MonoBehaviour {
 
     public Vector3 moveDirection = Vector3.zero;
 
-    Collider2D[] foundColliderArray = new Collider2D[1];
+    Collider2D[] foundColliderArray = new Collider2D[2];
 
     private BoxCollider2D bodyCollider2D;
     BoxCollider2D myGroundStopperCollider;
@@ -121,6 +121,8 @@ public class PlatformCharacterScript : MonoBehaviour {
                 SyncJump();
                 moveDirection.y = rigibodyJumpForce;
 
+                // remove current forces
+                rb2d.velocity = new Vector2(rb2d.velocity.x, 0f);
                 // Add a vertical force to the player.
                 rb2d.AddForce(new Vector2(0f, rigibodyJumpForce));
                 moveDirection.y = 0f;
@@ -151,101 +153,153 @@ public class PlatformCharacterScript : MonoBehaviour {
             return;
 
         //playerPos spriterenderer boundaries
-        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        //Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        if (useUnityPhysics)
+            playerPosition = rb2d.position;
+        else
+            playerPosition = transform.position;
 
         // Beam
         // 0.5 = half player size (pivot.x)
         // if players pos < leftborder+0.5
         // beam to rightborder-0.5
-        if (transform.position.x < -10.5f)
+        if (playerPosition.x < -10.5f)
         {
-            playerPos.x += 20f;
+            playerPosition.x += 20f;
         }
-        else if (transform.position.x > 10.5f)
+        else if (playerPosition.x > 10.5f)
         {
-            playerPos.x -= 20f;
-        }
-
-        if (transform.position.y < -7.5f)
-        {
-            playerPos.y += 15f;
-        }
-        else if (transform.position.y > 7.5f)
-        {
-            playerPos.y -= 15f;
+            playerPosition.x -= 20f;
         }
 
-        transform.position = playerPos;
+        if (playerPosition.y < -7.5f)
+        {
+            playerPosition.y += 15f;
+        }
+        else if (playerPosition.y > 7.5f)
+        {
+            playerPosition.y -= 15f;
+        }
+
+        if (useUnityPhysics)
+            rb2d.position = playerPosition;
+        else
+            transform.position = playerPosition;
     }
+
+    enum Edge
+    {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
+    }
+
+    Vector3 GetColliderEdgeWorldPosition (Vector3 goPosition, BoxCollider2D boxCollider, Edge edge)
+    {
+        Vector3 edgeWorldPos = Vector3.zero;
+        switch (edge)
+        {
+            case Edge.TopLeft:
+                edgeWorldPos.x = goPosition.x - boxCollider.size.x * 0.5f + boxCollider.offset.x;
+                edgeWorldPos.y = goPosition.y + boxCollider.size.y * 0.5f + boxCollider.offset.y;
+                break;
+            case Edge.TopRight:
+                edgeWorldPos.x = goPosition.x + boxCollider.size.x * 0.5f + boxCollider.offset.x;
+                edgeWorldPos.y = goPosition.y + boxCollider.size.y * 0.5f + boxCollider.offset.y;
+                break;
+            case Edge.BottomLeft:
+                edgeWorldPos.x = goPosition.x - boxCollider.size.x * 0.5f + boxCollider.offset.x;
+                edgeWorldPos.y = goPosition.y - spriteRenderer.bounds.extents.y * 1.2f; 
+                break;
+            case Edge.BottomRight:
+                edgeWorldPos.x = goPosition.x + boxCollider.size.x * 0.5f + boxCollider.offset.x;
+                edgeWorldPos.y = goPosition.y - spriteRenderer.bounds.extents.y * 1.2f; 
+                break;
+            default:
+
+                break;
+        }
+        return edgeWorldPos;
+    }
+
+    Vector2 playerPosition;
+    Vector2 playerColliderTopLeftPos;
+    Vector2 playerColliderBottomRightPos;
+    Vector2 playerColliderTopRightPos;
+    Vector2 playerColliderBottomLeftPos;
+    Vector2 playerColliderOffset = new Vector2(0.1f, 0.0f);     // FIX player jump at wall and get grounded
 
     void CheckPosition()
     {
 
-        Vector2 playerColliderOffset = new Vector2(0.1f, 0.0f); // FIX player jump at wall and get grounded
-
-        //playerPos spriterenderer boundaries
-        Vector2 playerPos = new Vector2(transform.position.x, transform.position.y);
+        //Rigidbody.position allows you to get and set the position of a Rigidbody using the physics engine. If you change the position of a Rigibody using Rigidbody.position, the transform will be updated after the next physics simulation step. This is faster than updating the position using Transform.position, as the latter will cause all attached Colliders to recalculate their positions relative to the Rigidbody. 
+        if (useUnityPhysics)
+            playerPosition = rb2d.position;
+        else
+            playerPosition = transform.position;
 
         Vector2 groundedOffset = new Vector2(0f, 0.5f);
 
-        Vector2 playerColliderTopLeftPos = new Vector2(transform.position.x - bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-                                                       transform.position.y);   // Collider Top Left
+        //playerColliderTopLeftPos = new Vector2(playerPosition.x - bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
+        //                                               playerPosition.y);   // Collider Top Left
 
-        Vector2 playerColliderBottomRightPos = new Vector2(transform.position.x + bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-                                                           transform.position.y - spriteRenderer.bounds.extents.y * 1.2f);  // Collider Bottom Right
+        //playerColliderBottomRightPos = new Vector2(playerPosition.x + bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
+        //                                                   playerPosition.y - spriteRenderer.bounds.extents.y * 1.2f);  // Collider Bottom Right
 
-        Vector2 playerColliderTopRightPos = new Vector2(transform.position.x + bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-                                                       transform.position.y);   // Collider Top Right
+        //playerColliderTopRightPos = new Vector2(playerPosition.x + bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
+        //                                               playerPosition.y);   // Collider Top Right
 
-        Vector2 playerColliderBottomLeftPos = new Vector2(transform.position.x - bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-                                                           transform.position.y - spriteRenderer.bounds.extents.y * 1.2f);  // Collider Bottom Left
+        //playerColliderBottomLeftPos = new Vector2(playerPosition.x - bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
+        //                                                   playerPosition.y - spriteRenderer.bounds.extents.y * 1.2f);  // Collider Bottom Left
+
+        playerColliderTopLeftPos = GetColliderEdgeWorldPosition(playerPosition, myGroundStopperCollider, Edge.TopLeft);
+        playerColliderBottomRightPos = GetColliderEdgeWorldPosition(playerPosition, myGroundStopperCollider, Edge.BottomRight);
+        playerColliderTopRightPos = GetColliderEdgeWorldPosition(playerPosition, myGroundStopperCollider, Edge.TopRight);
+        playerColliderBottomLeftPos = GetColliderEdgeWorldPosition(playerPosition, myGroundStopperCollider, Edge.BottomLeft);
+
 #if UNITY_EDITOR
-        //		Debug.DrawLine(playerColliderTopLeftPos, playerColliderBottomRightPos, Color.yellow);
-        //		Debug.DrawLine(playerColliderBottomLeftPos, playerColliderTopRightPos, Color.yellow);
-        Debug.DrawLine(playerColliderTopLeftPos, playerColliderTopRightPos, Color.yellow);
-        Debug.DrawLine(playerColliderTopLeftPos, playerColliderBottomRightPos, Color.yellow);
-        Debug.DrawLine(playerColliderTopRightPos, playerColliderBottomLeftPos, Color.yellow);
-        Debug.DrawLine(playerColliderBottomLeftPos, playerColliderBottomRightPos, Color.yellow);
-
         Debug.DrawLine(playerColliderTopLeftPos + playerColliderOffset, playerColliderTopRightPos - playerColliderOffset, Color.white);
         Debug.DrawLine(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, Color.white);
         Debug.DrawLine(playerColliderTopRightPos - playerColliderOffset, playerColliderBottomLeftPos + playerColliderOffset, Color.white);
-        Debug.DrawLine(playerColliderBottomLeftPos - playerColliderOffset, playerColliderBottomRightPos + playerColliderOffset, Color.white);
+        Debug.DrawLine(playerColliderBottomLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, Color.white);
 #endif
 
         /**
 		 * check if standing on activ jumpPlatform
 		 **/
 
-        //		LayerMask jumpOnPlatform = 1 << layer.jumpAblePlatform;
-        //Layer.class
         //Collider2D foundCollider = Physics2D.OverlapArea(playerColliderTopLeftPos, playerColliderBottomRightPos, jumpOnPlatform);
 
         bool platformGrounded = false;
 
         //int overlapCount = Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos, playerColliderBottomRightPos, foundColliderArray, jumpOnPlatform );
         foundColliderArray[0] = null;
-        Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, foundColliderArray, Layer.whatIsJumpOnPlatform);
+        int numberOfColider = Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, foundColliderArray, Layer.whatIsJumpOnPlatform);
 
-        if (foundColliderArray[0] != null)
+        for (int i=0; i< numberOfColider; i++)
         {
-            // Collider aus JumpOnPlatform Ebene (Laye) inerhalb des definierten Bereiches gefunden
-            // yellow zone collids with jumpOnPlatform
-
-            // kontrollieren ob Kollision zwischen Platform und groundStopper ignoriert wird (Ignorierung/Berücksichtigung wird von PlatformJumperScript durchgeführt)
-            // wenn Kollision ignoriert wird dann ist der Character zurzeit nicht am Fallen sondern am Springen
-
-            if (Physics2D.GetIgnoreCollision(foundColliderArray[0], myGroundStopperCollider))
+            if (foundColliderArray[0] != null)
             {
-                // true => Kollision mit gefundener JumpOnPlatform wird ignoriert (deaktiviert)
-                platformGrounded = false;
-            }
-            else
-            {
-                // false => Kollision mit gefundener JumpOnPlatform wird berücksichtigt (aktiv)
-                if (moveDirection.y <= 0)
+                // Collider aus JumpOnPlatform Ebene (Laye) inerhalb des definierten Bereiches gefunden
+                // yellow zone collids with jumpOnPlatform
+
+                // kontrollieren ob Kollision zwischen Platform und groundStopper ignoriert wird (Ignorierung/Berücksichtigung wird von PlatformJumperScript durchgeführt)
+                // wenn Kollision ignoriert wird dann ist der Character zurzeit nicht am Fallen sondern am Springen
+
+                if (Physics2D.GetIgnoreCollision(foundColliderArray[i], myGroundStopperCollider))
                 {
-                    platformGrounded = true;
+                    // true => Kollision mit gefundener JumpOnPlatform wird ignoriert (deaktiviert)
+                    platformGrounded = false;
+                }
+                else
+                {
+                    // false => Kollision mit gefundener JumpOnPlatform wird berücksichtigt (aktiv)
+                    //if (moveDirection.y <= 0)
+                    //    platformGrounded = true;
+
+                    if (rb2d.velocity.y <= 0)
+                        platformGrounded = true;
                 }
             }
         }
@@ -254,11 +308,6 @@ public class PlatformCharacterScript : MonoBehaviour {
         /**
 		 * 	Checking if standing on solid/static groundCollider
 		 **/
-
-
-        //		LayerMask ground = 1 << layer.block;
-        //		ground |= 1 << layer.ground;
-        //Layer.class
 
         grounded = false;
 
@@ -284,15 +333,6 @@ public class PlatformCharacterScript : MonoBehaviour {
         {
             grounded = true;
         }
-
-        /**
-		 * Walled
-		 **/
-
-        //		walled = Physics2D.OverlapCircle(playerPos+wallCheckPosition, wallRadius, layer.whatIsWall);
-        //#if UNITY_EDITOR
-        //Debug.DrawLine(playerPos, playerPos+wallCheckPosition + 1*transform.localScale.x * new Vector2(wallRadius,0), Color.green);
-        //#endif
     }
 
     void SimulateAnimation()

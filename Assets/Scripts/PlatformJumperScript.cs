@@ -7,6 +7,9 @@ public class PlatformJumperScript : MonoBehaviour {
     //TODO überschreibt vererbung, zum cachen
     new public Transform transform;
     public Rigidbody2D rb2d;
+    Vector3 playerPosition;
+    [SerializeField]
+    bool usePhysics = true;
 
     GameObject gameController;
     PlatformCharacterScript myPlatformCharacter;
@@ -70,7 +73,7 @@ public class PlatformJumperScript : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void FixedUpdate () {
         JumpAblePlatformV4();
     }
 
@@ -94,10 +97,14 @@ public class PlatformJumperScript : MonoBehaviour {
         /**
 		 * find Platform to deactivate
 		 **/
+         if (usePhysics)
+            playerPosition = rb2d.position;
+         else
+            playerPosition = transform.position;
 
         //Collider2D platformColliderIgnoring;
-        platformColliderFinderTopLeftPos = transform.position + new Vector3(-0.75f, +0.75f, 0f);
-        platformColliderFinderBottomRightPos = transform.position + new Vector3(+0.75f, -0.75f, 0f);
+        platformColliderFinderTopLeftPos = playerPosition + new Vector3(-0.75f, +0.75f, 0f);
+        platformColliderFinderBottomRightPos = playerPosition + new Vector3(+0.75f, -0.75f, 0f);
         //platformColliderIgnoring = Physics2D.OverlapArea(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, jumpOnPlatform);
         platformColliderIgnoringArray[0] = null;
         int found = Physics2D.OverlapAreaNonAlloc(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, platformColliderIgnoringArray, Layer.whatIsJumpOnPlatform);
@@ -111,7 +118,7 @@ public class PlatformJumperScript : MonoBehaviour {
             for (int i = 0; i < found; i++) {
                 Physics2D.IgnoreCollision(bodyCollider, platformColliderIgnoringArray[i], true);
                 Physics2D.IgnoreCollision(groundStopper, platformColliderIgnoringArray[i], true);
-                Debug.DrawLine(transform.position, platformColliderIgnoringArray[i].transform.position, Color.green, 1f);
+                Debug.DrawLine(playerPosition, platformColliderIgnoringArray[i].transform.position, Color.green, 1f);
             }
         }
 
@@ -141,8 +148,8 @@ public class PlatformJumperScript : MonoBehaviour {
             return;
 
         //Collider2D platformColliderConsidering;
-        platformColliderFinderTopLeftPos = transform.position + new Vector3(-bodyCollider.size.x * 0.5f, -0.4f, 0f);
-        platformColliderFinderBottomRightPos = transform.position + new Vector3(+bodyCollider.size.x * 0.5f, -2f, 0f);
+        platformColliderFinderTopLeftPos = playerPosition + new Vector3(-bodyCollider.size.x * 0.5f, -0.4f, 0f);
+        platformColliderFinderBottomRightPos = playerPosition + new Vector3(+bodyCollider.size.x * 0.5f, -2f, 0f);
         //platformColliderConsidering = Physics2D.OverlapArea(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, jumpOnPlatform);
         platformColliderConsideringArray[0] = null;
         int found2 = Physics2D.OverlapAreaNonAlloc(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, platformColliderConsideringArray, Layer.whatIsJumpOnPlatform);
@@ -157,11 +164,11 @@ public class PlatformJumperScript : MonoBehaviour {
                 {
                     Physics2D.IgnoreCollision(bodyCollider, platformColliderConsideringArray[i], false);
                     Physics2D.IgnoreCollision(groundStopper, platformColliderConsideringArray[i], false);
-                    Debug.DrawLine(transform.position, platformColliderConsideringArray[i].transform.position, Color.magenta, 1f);
+                    Debug.DrawLine(playerPosition, platformColliderConsideringArray[i].transform.position, Color.magenta, 1f);
                 }
                 else
                 {
-                    Debug.DrawLine(transform.position, platformColliderConsideringArray[i].transform.position, Color.white, 1f);
+                    Debug.DrawLine(playerPosition, platformColliderConsideringArray[i].transform.position, Color.white, 1f);
                     Debug.DrawLine(platformColliderConsideringArray[i].transform.position, platformColliderConsideringArray[i].transform.position + Vector3.down, Color.white, 1f);
                 }
 
@@ -201,7 +208,7 @@ public class PlatformJumperScript : MonoBehaviour {
     {
         float groundStopperBottomHeight;
         float platformTopHeight;
-        //groundStopperBottomHeight = groundStopper.transform.position.y + groundStopper.offset.y - groundStopper.bounds.size.y * 0.5f;
+        //groundStopperBottomHeight = groundStopper.playerPosition.y + groundStopper.offset.y - groundStopper.bounds.size.y * 0.5f;
         groundStopperBottomHeight = rb2d.position.y + groundStopper.offset.y - groundStopper.bounds.size.y * 0.5f;
         platformTopHeight = collider2D.transform.position.y + collider2D.offset.y + collider2D.bounds.size.y * 0.5f;
 
