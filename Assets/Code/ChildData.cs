@@ -78,7 +78,8 @@ public class ChildData
 			if(true)
 			{
 				rb2d.gravityScale = gravityScale;
-				rb2d.fixedAngle = fixedAngle;
+				//rb2d.fixedAngle = fixedAngle;
+                rb2d.constraints = RigidbodyConstraints2D.FreezeRotation;
 				
 				//all
 //				rb2d.enabled = enabled;

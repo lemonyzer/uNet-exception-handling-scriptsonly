@@ -1259,6 +1259,7 @@ public class CharacterCreationHelper : EditorWindow {
 		   window_SmwCharacterGenerics.rageAnimClip != null &&
 		   window_SmwCharacterGenerics.spawnAnimClip != null &&
 		   window_SmwCharacter != null &&
+		   window_SmwCharacter.GetSprites(teamId,SmwCharacterAnimation.Spritesheet) != null &&
 		   window_SmwCharacter.GetSprites(teamId,SmwCharacterAnimation.Spritesheet).Length == 6)
 			return true;
 		else

@@ -5,13 +5,18 @@ using System;
 
 using UnityStandardAssets.CrossPlatformInput;
 
-public class PlatformCharacterScript : MonoBehaviour {
+public class PlatformCharacterScript : NetworkBehaviour {
 
     //TODO überschreibt vererbung, zum cachen
     new public Transform transform;
     public Rigidbody2D rb2d;
+    [SerializeField]
+    PlatformUserControl inputScript;
 
     [SerializeField]
+    ParticleSystem frictionSmoke;
+
+    [SyncVar] [SerializeField]
     public bool grounded = false;
 
     bool walled = false;
@@ -21,6 +26,7 @@ public class PlatformCharacterScript : MonoBehaviour {
     bool beamEnabled = true;
 
     public Animator anim;                                   // Animator State Machine
+    [SyncVar(hook = "OnChangeDirection")]
     public bool facingRight = true;                         // keep DrawCalls low, Flip textures scale: texture can be used for both directions 
     public bool changedRunDirection = false;
 	public AudioClip changeRunDirectionSound;	// Skid Sound
@@ -52,7 +58,8 @@ public class PlatformCharacterScript : MonoBehaviour {
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
-        rb2d.gravityScale = 1;
+
+        inputScript = GetComponent<PlatformUserControl>();
     }
 
     void AnimatorScriptsInitialisierung()
@@ -97,18 +104,26 @@ public class PlatformCharacterScript : MonoBehaviour {
 
     void Simulate ()
     {
-        SimulateWithPhysics();
+        // Move (need check position ??)
+        SimulateMovementWithRigidbodyPhysics();
+
+        // Check Beam 
         CheckBeam();
+
+        // Check new Position for Animation
         CheckPosition();
+
+        // Set Movementanimation Flags
         SimulateAnimation();
     }
 
-    void SimulateWithPhysics ()
+    void SimulateMovementWithRigidbodyPhysics()
     {
         //TODO
         // NEW
         //TODO
-        moveDirection.x = CrossPlatformInputManager.GetAxis ("Horizontal");
+        //moveDirection.x = CrossPlatformInputManager.GetAxis ("Horizontal");
+        moveDirection.x = inputScript.GetInputHorizontal ();
         // If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
         if (moveDirection.x * rb2d.velocity.x < rigibodyMaxSpeed)
             // ... add a force to the player.
@@ -116,7 +131,8 @@ public class PlatformCharacterScript : MonoBehaviour {
 
         if (grounded && (rb2d.velocity.y <= 0.1f))
         {
-            if (CrossPlatformInputManager.GetButton("Jump"))
+            //if (CrossPlatformInputManager.GetButton("Jump"))
+            if (inputScript.inputJump)
             {
                 SyncJump();
                 moveDirection.y = rigibodyJumpForce;
@@ -223,6 +239,8 @@ public class PlatformCharacterScript : MonoBehaviour {
         return edgeWorldPos;
     }
 
+    bool useCustomPlatformJumperScript = false;
+
     Vector2 playerPosition;
     Vector2 playerColliderTopLeftPos;
     Vector2 playerColliderBottomRightPos;
@@ -238,20 +256,6 @@ public class PlatformCharacterScript : MonoBehaviour {
             playerPosition = rb2d.position;
         else
             playerPosition = transform.position;
-
-        Vector2 groundedOffset = new Vector2(0f, 0.5f);
-
-        //playerColliderTopLeftPos = new Vector2(playerPosition.x - bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-        //                                               playerPosition.y);   // Collider Top Left
-
-        //playerColliderBottomRightPos = new Vector2(playerPosition.x + bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-        //                                                   playerPosition.y - spriteRenderer.bounds.extents.y * 1.2f);  // Collider Bottom Right
-
-        //playerColliderTopRightPos = new Vector2(playerPosition.x + bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-        //                                               playerPosition.y);   // Collider Top Right
-
-        //playerColliderBottomLeftPos = new Vector2(playerPosition.x - bodyCollider2D.size.x * 0.5f + bodyCollider2D.offset.x,
-        //                                                   playerPosition.y - spriteRenderer.bounds.extents.y * 1.2f);  // Collider Bottom Left
 
         playerColliderTopLeftPos = GetColliderEdgeWorldPosition(playerPosition, myGroundStopperCollider, Edge.TopLeft);
         playerColliderBottomRightPos = GetColliderEdgeWorldPosition(playerPosition, myGroundStopperCollider, Edge.BottomRight);
@@ -333,6 +337,17 @@ public class PlatformCharacterScript : MonoBehaviour {
         {
             grounded = true;
         }
+
+        // Should be Tested
+        //if (rb2d.velocity.y > 0)
+        //    grounded = false;
+        CmdSyncGrounded(grounded);
+    }
+
+    [Command(channel = Channels.DefaultUnreliable)]
+    private void CmdSyncGrounded(bool groundedState)
+    {
+        grounded = groundedState;
     }
 
     void SimulateAnimation()
@@ -340,18 +355,18 @@ public class PlatformCharacterScript : MonoBehaviour {
         anim.SetBool(HashID.groundedBool, grounded);
         anim.SetBool(HashID.walledBool, walled);
 
-        anim.SetFloat(HashID.hSpeedFloat, moveDirection.x);
+        anim.SetFloat(HashID.hSpeedFloat, rb2d.velocity.x);
         if (facingRight && moveDirection.x < 0)
         {
-            Flip();
+            Flip(false);
         }
         else if (!facingRight && moveDirection.x > 0)
         {
-            Flip();
+            Flip(true);
         }
     }
 
-    void Flip()
+    void Flip(bool newFacingRightState)
     {
 
         // Drift sound abspielen
@@ -370,19 +385,38 @@ public class PlatformCharacterScript : MonoBehaviour {
                 AudioSource.PlayClipAtPoint(changeRunDirectionSound, transform.position, 1);                //ChangeDirection
             else
                 Debug.LogError("change run direction sound fehlt!");
+
+            frictionSmoke.Play();
         }
 
         // Richtungvariable anpassen
-        facingRight = !facingRight;
-
-        // WallCheck anpassen
-        wallCheckPosition *= -1;
+        facingRight = newFacingRightState;
 
         // Transform spiegeln
         Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
+        theScale.x = Mathf.Abs(theScale.x);
+        if (!facingRight)
+            theScale.x *= -1;
+
         transform.localScale = theScale;
 
+        if (isLocalPlayer)
+            CmdSyncFlip(facingRight);   // sync with server, [SyncVar] get changed and updated to Clients
+    }
+
+    [Command(channel = Channels.DefaultUnreliable)]
+    void CmdSyncFlip (bool facingRightState)
+    {
+        facingRight = facingRightState;
+    }
+
+    // called by SyncVar hook
+    void OnChangeDirection(bool newFacingRight)
+    {
+        if (isLocalPlayer)
+            return;
+
+        Flip(newFacingRight);
     }
 
     internal void StartBetterSpawnDelay()

@@ -2,6 +2,8 @@
 using UnityEngine.Networking;
 using System.Collections;
 
+using UnityStandardAssets.CrossPlatformInput;
+
 /**
  *  Ein GameObject (Tag: UserControls) mit diesem UserControlScript in JEDER Scene
  *  
@@ -28,7 +30,7 @@ public class PlatformUserControl : MonoBehaviour {
 	 **/
 
 	[SerializeField]
-	bool useThreeStateMovement = true;
+	bool useThreeStateMovement = false;
 	float threeStateMovementSchwellwert = 0.5f;		// schwellwert
 
 	[SerializeField]
@@ -183,7 +185,7 @@ public class PlatformUserControl : MonoBehaviour {
 	/// </summary>
 	void Awake()
 	{
-		realOwner = GetComponent<RealOwner>();
+		//realOwner = GetComponent<RealOwner>();
 	}
 
 	void Start() {
@@ -196,7 +198,7 @@ public class PlatformUserControl : MonoBehaviour {
 		//TODO static analogStick ?? muss nur einmal für diese klasse festgelegt werden
 		//TODO static stick ?? muss nur einmal für diese klasse festgelegt werden
 
-        if (false)
+        if (!simple)
         {
             InitTouch();
         }
@@ -283,6 +285,7 @@ public class PlatformUserControl : MonoBehaviour {
 		}
 	}
 
+    bool simple = true;
 	public bool simulate = false;
 
 	// Update is called once per frame
@@ -291,23 +294,35 @@ public class PlatformUserControl : MonoBehaviour {
 	/// </summary>
 	void Update() {
 
-		// Wenn jeder Character ein UserControl script hat muss abgefragt werden ob der Character dem lokalen Spieler gehört
-        
-		if( NetFusion.isAuthoritative (null, realOwner) )
-		{
-            
-            if (simulate)
-				return;
+        if (simulate)
+        {
+            if (inputLeft)
+                inputHorizontal = -1;
 
-			ApplicationPlatformInputCheck();		//
-			CombineInput(); 						// kombiniert alle abgefragten Eingabemöglichkeiten (Keyboard, Touchpad, Mouse...)
-			// dannach stehen die Eingabedaten in inputHorizontal und inputJump
-		}
-		else
-		{
-			// Update darf input Variablen nicht überschreiben, da NetworkedPlayer diese ebenfals verwendet
-			this.enabled = false;
-		}
+            if (inputRight)
+                inputHorizontal = +1;
+
+            return;
+        }
+        else
+        {
+            SetInputHorizontal (CrossPlatformInputManager.GetAxis("Horizontal"));
+            inputJump = CrossPlatformInputManager.GetButton("Jump");
+        }
+
+  //      // Wenn jeder Character ein UserControl script hat muss abgefragt werden ob der Character dem lokalen Spieler gehört
+
+  //      if ( NetFusion.isAuthoritative (null, realOwner) )
+		//{
+		//	ApplicationPlatformInputCheck();		//
+		//	CombineInput(); 						// kombiniert alle abgefragten Eingabemöglichkeiten (Keyboard, Touchpad, Mouse...)
+		//	// dannach stehen die Eingabedaten in inputHorizontal und inputJump
+		//}
+		//else
+		//{
+		//	// Update darf input Variablen nicht überschreiben, da NetworkedPlayer diese ebenfals verwendet
+		//	this.enabled = false;
+		//}
 	}
 
 	/// <summary>

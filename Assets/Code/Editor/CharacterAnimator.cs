@@ -5,33 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-class AnimationClipSettings
-{
-	SerializedProperty m_Property;
-	
-	private SerializedProperty Get (string property) { return m_Property.FindPropertyRelative(property); }
-	
-	public AnimationClipSettings(SerializedProperty prop) { m_Property = prop; }
-	
-	public float startTime   { get { return Get("m_StartTime").floatValue; } set { Get("m_StartTime").floatValue = value; } }
-	public float stopTime	{ get { return Get("m_StopTime").floatValue; }  set { Get("m_StopTime").floatValue = value; } }
-	public float orientationOffsetY { get { return Get("m_OrientationOffsetY").floatValue; } set { Get("m_OrientationOffsetY").floatValue = value; } }
-	public float level { get { return Get("m_Level").floatValue; } set { Get("m_Level").floatValue = value; } }
-	public float cycleOffset { get { return Get("m_CycleOffset").floatValue; } set { Get("m_CycleOffset").floatValue = value; } }
-	
-	public bool loopTime { get { return Get("m_LoopTime").boolValue; } set { Get("m_LoopTime").boolValue = value; } }
-	public bool loopBlend { get { return Get("m_LoopBlend").boolValue; } set { Get("m_LoopBlend").boolValue = value; } }
-	public bool loopBlendOrientation { get { return Get("m_LoopBlendOrientation").boolValue; } set { Get("m_LoopBlendOrientation").boolValue = value; } }
-	public bool loopBlendPositionY { get { return Get("m_LoopBlendPositionY").boolValue; } set { Get("m_LoopBlendPositionY").boolValue = value; } }
-	public bool loopBlendPositionXZ { get { return Get("m_LoopBlendPositionXZ").boolValue; } set { Get("m_LoopBlendPositionXZ").boolValue = value; } }
-	public bool keepOriginalOrientation { get { return Get("m_KeepOriginalOrientation").boolValue; } set { Get("m_KeepOriginalOrientation").boolValue = value; } }
-	public bool keepOriginalPositionY { get { return Get("m_KeepOriginalPositionY").boolValue; } set { Get("m_KeepOriginalPositionY").boolValue = value; } }
-	public bool keepOriginalPositionXZ { get { return Get("m_KeepOriginalPositionXZ").boolValue; } set { Get("m_KeepOriginalPositionXZ").boolValue = value; } }
-	public bool heightFromFeet { get { return Get("m_HeightFromFeet").boolValue; } set { Get("m_HeightFromFeet").boolValue = value; } }
-	public bool mirror { get { return Get("m_Mirror").boolValue; } set { Get("m_Mirror").boolValue = value; } }
-}
-
-
 public class CharacterAnimator {
 
 	[System.Serializable]
@@ -107,37 +80,67 @@ public class CharacterAnimator {
 		
 		// Layer 0 State Machine
 		AnimatorStateMachine rootStateMachine = controller.layers[0].stateMachine;
-		
-		// Add states
-		AnimatorState idleState = controller.layers[0].stateMachine.AddState(HashID.s_Idle);
-		//		idleState.motion = idleAnim;
-		
-		AnimatorState jumpState = controller.layers[0].stateMachine.AddState(HashID.s_JumpAndFall);
-		//		jumpState.motion = jumpAnim;
-		
-		AnimatorState runState = controller.layers[0].stateMachine.AddState(HashID.s_Run);
-		//		runState.motion = runAnim;
-		
-		AnimatorState skidState = controller.layers[0].stateMachine.AddState(HashID.s_ChangeRunDirection);
-		//		skidState.motion = changeRunDirectionAnim;
-		
-		AnimatorState hittedState = controller.layers[0].stateMachine.AddState(HashID.s_Generic_Hitted);
-		//		hittedState.motion = idleAnim;
-		
-		AnimatorState headJumpedState = controller.layers[0].stateMachine.AddState(HashID.s_HeadJumped);
-		//		headJumpedState.motion = headJumpedAnim;
-		
-		AnimatorState gameOverState = controller.layers[0].stateMachine.AddState(HashID.s_GameOver);
-		//		gameOverState.motion = headJumpedAnim;
-		
-		AnimatorState deadState = controller.layers[0].stateMachine.AddState(HashID.s_Dead);
-		//		deadState.motion = headJumpedAnim;
-		
-		AnimatorState spawnState = controller.layers[0].stateMachine.AddState(HashID.s_Generic_Spawn);
-		spawnState.AddStateMachineBehaviour(typeof(SpawnStateScript));	//TODO reference zu characterScript direct mitgeben???
-//		spawnState.AddStateMachineBehaviour(new SpawnStateScript());
 
-		AnimatorState spawnDelayState = controller.layers[0].stateMachine.AddState(HashID.s_Generic_SpawnDelay);
+        Vector3 anyStatePos = rootStateMachine.anyStatePosition;
+        Vector3 entryStatePos = rootStateMachine.entryPosition;
+        Vector3 refStatePos = anyStatePos;
+        Vector3 tempStatePos;
+
+        tempStatePos = anyStatePos;
+        tempStatePos.x += 200;
+        rootStateMachine.anyStatePosition = tempStatePos;
+
+        /*          Add states           */
+
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y - 200;
+		AnimatorState idleState = controller.layers[0].stateMachine.AddState(HashID.s_Idle, tempStatePos);
+        //		idleState.motion = idleAnim;
+
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y - 100;
+        AnimatorState jumpState = controller.layers[0].stateMachine.AddState(HashID.s_JumpAndFall, tempStatePos);
+        //		jumpState.motion = jumpAnim;
+
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y - 300;
+        AnimatorState runState = controller.layers[0].stateMachine.AddState(HashID.s_Run, tempStatePos);
+        //		runState.motion = runAnim;
+
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y - 400;
+        AnimatorState skidState = controller.layers[0].stateMachine.AddState(HashID.s_ChangeRunDirection, tempStatePos);
+        //		skidState.motion = changeRunDirectionAnim;
+
+        tempStatePos.x = refStatePos.x + 600;
+        tempStatePos.y = refStatePos.y;
+        AnimatorState hittedState = controller.layers[0].stateMachine.AddState(HashID.s_Generic_Hitted, tempStatePos);
+        //		hittedState.motion = idleAnim;
+
+        tempStatePos.x = refStatePos.x + 750;
+        tempStatePos.y = refStatePos.y - 100;
+        AnimatorState headJumpedState = controller.layers[0].stateMachine.AddState(HashID.s_HeadJumped, tempStatePos);
+        //		headJumpedState.motion = headJumpedAnim;
+
+        tempStatePos.x = refStatePos.x + 450;
+        tempStatePos.y = refStatePos.y - 100;
+        AnimatorState gameOverState = controller.layers[0].stateMachine.AddState(HashID.s_GameOver, tempStatePos);
+        //		gameOverState.motion = headJumpedAnim;
+
+        tempStatePos.x = refStatePos.x + 600;
+        tempStatePos.y = refStatePos.y - 200;
+        AnimatorState deadState = controller.layers[0].stateMachine.AddState(HashID.s_Dead, tempStatePos);
+        //		deadState.motion = headJumpedAnim;
+
+        tempStatePos.x = refStatePos.x + 750;
+        tempStatePos.y = refStatePos.y - 300;
+        AnimatorState spawnState = controller.layers[0].stateMachine.AddState(HashID.s_Generic_Spawn, tempStatePos);
+		spawnState.AddStateMachineBehaviour(typeof(SpawnStateScript));  //TODO reference zu characterScript direct mitgeben???
+                                                                        //		spawnState.AddStateMachineBehaviour(new SpawnStateScript());
+
+        tempStatePos.x = refStatePos.x + 800;
+        tempStatePos.y = refStatePos.y - 400;
+        AnimatorState spawnDelayState = controller.layers[0].stateMachine.AddState(HashID.s_Generic_SpawnDelay, tempStatePos);
 		spawnDelayState.AddStateMachineBehaviour(typeof(SpawnDelayStateScript));	//TODO reference zu characterScript direct mitgeben???
 //		spawnState.AddStateMachineBehaviour(new SpawnDelayStateScript());
 
@@ -186,10 +189,19 @@ public class CharacterAnimator {
 //		controller.layers[1].blendingMode = AnimatorLayerBlendingMode.Override;			// setzt für die zeit die es aktiv ist die variablen und wenn deaktiviert wird variable auf vorherigen wert gesetzt
 //		controller.layers[1].defaultWeight = 1f;
 		AnimatorStateMachine overlayStateMachine = controller.layers[1].stateMachine;
-		
-		AnimatorState defaultOverlayState = overlayStateMachine.AddState(HashID.s_l1_Generic_DefaultState);
-		AnimatorState invincibleOverlayState = overlayStateMachine.AddState(HashID.s_l1_Generic_Invincible);
-		AnimatorState protectionOverlayState = overlayStateMachine.AddState(HashID.s_l1_Generic_Protection);
+
+        refStatePos = overlayStateMachine.anyStatePosition;
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y;
+        AnimatorState defaultOverlayState = overlayStateMachine.AddState(HashID.s_l1_Generic_DefaultState, tempStatePos);
+
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y - 100;
+        AnimatorState invincibleOverlayState = overlayStateMachine.AddState(HashID.s_l1_Generic_Invincible, tempStatePos);
+
+        tempStatePos.x = refStatePos.x + 200;
+        tempStatePos.y = refStatePos.y + 100;
+        AnimatorState protectionOverlayState = overlayStateMachine.AddState(HashID.s_l1_Generic_Protection, tempStatePos);
 		
 		AnimatorStateTransition leaveInvincibleEnterDefaultState = invincibleOverlayState.AddTransition(defaultOverlayState);
 		//		leaveInvincibleEnterDefaultState.AddCondition(AnimatorConditionMode.If, 0, HashID.p_rageTrigger);
@@ -286,9 +298,17 @@ public class CharacterAnimator {
 		leaveSkidEnterRun.hasExitTime = true;			//TODO achtung byTime!
 		leaveSkidEnterRun.exitTime = 1f;
 		leaveSkidEnterRun.canTransitionToSelf = false;
-		
-		// Any State Transistion
-		AnimatorStateTransition hittedTransition = rootStateMachine.AddAnyStateTransition(hittedState);	//special TODO markt
+
+        // Any State Transistion
+        AnimatorStateTransition fallingTransition = rootStateMachine.AddAnyStateTransition(jumpState); //special TODO markt
+        fallingTransition.AddCondition(AnimatorConditionMode.If, 0, HashID.p_hitTrigger);
+        fallingTransition.duration = 0;
+        fallingTransition.hasExitTime = false;
+        fallingTransition.exitTime = 1f;
+        fallingTransition.canTransitionToSelf = false;
+
+        // Any State Transistion
+        AnimatorStateTransition hittedTransition = rootStateMachine.AddAnyStateTransition(hittedState);	//special TODO markt
 		hittedTransition.AddCondition(AnimatorConditionMode.If, 0, HashID.p_hitTrigger);
 		hittedTransition.duration = 0;
 		hittedTransition.hasExitTime = false;

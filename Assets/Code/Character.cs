@@ -15,8 +15,8 @@ public class Character : IComparable<Character>
 	[SerializeField]
 	private GameObject characterGameObject;
 
-	[SerializeField]
-	private bool isAI;
+	//[SerializeField]
+	//private bool isAI;
 
 	[SerializeField]
 	private NetworkView gameObjectsNetworkView;
@@ -64,7 +64,7 @@ public class Character : IComparable<Character>
 	{
 		this.prefabFilename = file;
 		this.characterGameObject = instantiatedPrefab;
-		this.isAI = isAI;
+		//this.isAI = isAI;
 		this.characterName = instantiatedPrefab.name;
 
 //		this.gameObjectsPhotonView = instantiatedPrefab.GetComponent<PhotonView>();

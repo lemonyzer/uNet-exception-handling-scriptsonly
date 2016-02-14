@@ -118,7 +118,16 @@ public class SmwCharacter : ScriptableObject {
 
 	void Check()
 	{
-
+        //for (int i=0; i<characters.Length; i++)
+        //{
+        //    if (characters[i] == null)
+        //    {
+        //        characters[i] = new TeamCharacter();
+        //        Debug.Log(this.ToString() + " Character " + (Teams)i + " created");
+        //    }
+        //}
+        
+        //// UnityEditor.EditorUtility.SetDirty(this);
 	}
 
 	public string charName;
@@ -173,7 +182,14 @@ public class SmwCharacter : ScriptableObject {
 
     public Sprite[] GetSprites(Teams teamId, SmwCharacterAnimation type)
     {
+        if (GetCharacter(teamId) == null)
+        {
+            Debug.LogError(this.name + " " + teamId + " not initialized");
+            return null;
+        }
+
         Sprite[] value = null;
+
         switch (type)
         {
             case SmwCharacterAnimation.Spritesheet:
