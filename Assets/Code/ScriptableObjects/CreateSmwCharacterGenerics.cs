@@ -6,12 +6,13 @@ using UnityEditor;
 public class CreateSmwCharacterGenerics {
 
 
-	[MenuItem("Assets/Create/SMW Character Generics SO")]
+	[MenuItem("SMW/Assets/Create/SMW Character Generics SO")]
 	public static SmwCharacterGenerics Create()
 	{
 		SmwCharacterGenerics asset = ScriptableObject.CreateInstance<SmwCharacterGenerics>();
 
-		AssetDatabase.CreateAsset(asset, "Assets/SMWCharacterGenerics.asset");
+        string uniquePath = AssetDatabase.GenerateUniqueAssetPath("Assets/SMWCharacterGenerics.asset");
+        AssetDatabase.CreateAsset(asset, uniquePath);
 		AssetDatabase.SaveAssets();
 		return asset;
 	}

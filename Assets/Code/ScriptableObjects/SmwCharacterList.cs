@@ -3,71 +3,84 @@ using System.Collections;
 using System.Collections.Generic;
 
 
+/*
+
+    ScriptableObjects
+
+    1] Create
+        ScritpableObject.CreateInstance
+
+    2] Initialisierung
+        init in classmember definition (überschreibt andere initialisierungswerte??!!)
+       void Awake () or
+       void OnEnable ()
+
+    DONT'S:
+        create through Constructor 
+
+    */
+
 public class SmwCharacterList : ScriptableObject {
 
-//	public void OnGUI()
-//	{
-//
-//	}
-
-	public List<Character> charactersList;
+    [SerializeField]
+    public List<Character> charactersList;
 	[SerializeField]
 	private List<SmwCharacter> characterSOList;
 
-	public int Count 
+    public List<SmwCharacter> CharacterSOList { get { return characterSOList; } }
+
+    public int Count 
 	{ 
 		get { return characterSOList.Count; }
 	}
 
-//	public List<Character> characters
-
-	// Awake() wird bei ScriptableObject.Create asugeführt!!!!
-
 	private void Check()
 	{
-		if(charactersList == null)
-		{
-			Debug.LogWarning("<color=red>" + this.ToString() + " characterSOList war nicht vorhanden</color>", this);
-			characterSOList = new List<SmwCharacter>();
-		}
-		else
-			Debug.LogWarning("<color=green>" + this.ToString() + " characterSOList war vorhanden</color>", this);
+        if (charactersList == null)
+        {
+            //Debug.LogWarning("<color=red>" + this.ToString() + " charactersList war nicht vorhanden</color>", this);
+            charactersList = new List<Character>();
+            //Debug.Log("<color=green>" + this.ToString() + " charactersList initialisiert</color>", this);
+        }
+        //else
+        //{
+        //    Debug.LogWarning("<color=green>" + this.ToString() + " charactersList war vorhanden</color>", this);
+        //}
 
-		//TODO hideFlags = HideFlags.HideAndDontSave;
-	}
+        if (characterSOList == null)
+        {
+            //Debug.LogWarning("<color=red>" + this.ToString() + " characterSOList war nicht vorhanden</color>", this);
+            characterSOList = new List<SmwCharacter>();
+            //Debug.Log("<color=green>" + this.ToString() + " characterSOList initialisiert</color>", this);
+        }
+        //else
+        //{
+        //    Debug.LogWarning("<color=green>" + this.ToString() + " characterSOList war vorhanden</color>", this);
+        //}
 
-	/**
-	 * ArgumentException: ToString can only be called from the main thread.
-	 * Constructors and field initializers will be executed from the loading thread when loading a scene.
-	 * Don't use this function in the constructor or field initializers, instead move initialization code to the Awake or Start function.
-	 * SmwCharacterList..ctor () (at Assets/Scripts/_Character/SmwCharacterList.cs:36)
-	 **/
-	public SmwCharacterList()
+        //charactersList.Add(new Character());
+        ////characterSOList.Add(ScriptableObject.CreateInstance<SmwCharacter>());   // not possible
+        //characterSOList.Add(CreateSmwCharacter.CreateAssetAndSetup());
+        //Save();
+        //TODO hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    public void Awake()
+    {
+        //Debug.LogWarning(this.ToString() + " Awake ()");        // Awake() wird bei ScriptableObject.Create asugeführt!!!!
+        Check();
+    }
+
+    // use for initialisation
+    public void OnEnable()
 	{
-//		Debug.LogWarning(this.ToString() + " Konstruktor () - > ScriptableObject erzeugt");		// wird auch at Runtime ausgeführt
-//		Check();
-	}
-
-	public void Awake()
-	{
-		Debug.LogWarning(this.ToString() + " Awake ()");		// Awake() wird bei ScriptableObject.Create asugeführt!!!!
-		Check();
-	}
-
-	public void OnEnable()
-	{
-		Debug.LogWarning(this.ToString() + " OnEnable ()");		// OnEnable() wird bei ScriptableObject.Create asugeführt!!!!
-		Check();
+		//Debug.LogWarning(this.ToString() + " OnEnable ()");		// OnEnable() wird bei ScriptableObject.Create asugeführt!!!!
 	}
 
 	public void Start()
 	{
 		Debug.LogWarning(this.ToString() + " Start ()");
-		Check();
 	}
-
-
-
 
 	public void Save()
 	{

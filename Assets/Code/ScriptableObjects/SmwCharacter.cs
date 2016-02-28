@@ -14,120 +14,30 @@ public enum SmwCharacterAnimation
     HeadJumped
 }
 
-[System.Serializable]
-public class TeamCharacter
-{
-    public GameObject charPrefab;
-    public GameObject unityNetworkPrefab;
-
-    public Sprite[] charSpritesheet;
-    public RuntimeAnimatorController runtimeAnimatorController;
-
-    public Sprite[] charIdleSprites;
-    public Sprite[] charRunSprites;
-    public Sprite[] charJumpSprites;
-    public Sprite[] charSkidSprites;
-    public Sprite[] charDieSprites;
-    //	public Sprite[] charGameOverSprites;
-    public Sprite[] charHeadJumpedSprites;
-
-
-    public void SetCharSpritesheet(Sprite[] sprites)
-    {
-        charSpritesheet = sprites;
-
-        if (sprites.Length < 6)
-        {
-            Debug.LogError("Sprite needs do be prepared (sliced to 6 sprites), no automating slicing");
-            return;
-        }
-
-        //Idle
-        charIdleSprites = new Sprite[1];
-        charIdleSprites[0] = charSpritesheet[0];
-        //charIdleSprites[0] = Sprite.Create(charSpriteSheet[0].texture, charSpriteSheet[0].rect, charSpriteSheet[0].pivot);
-
-        //Run
-        charRunSprites = new Sprite[2];
-        charRunSprites[0] = charSpritesheet[0];
-        charRunSprites[1] = charSpritesheet[1];
-
-        //Jump
-        charJumpSprites = new Sprite[1];
-        charJumpSprites[0] = charSpritesheet[2];
-
-        //Skid - ChangeRunDirection
-        charSkidSprites = new Sprite[1];
-        charSkidSprites[0] = charSpritesheet[3];
-
-        //Die
-        charDieSprites = new Sprite[1];
-        charDieSprites[0] = charSpritesheet[4];
-
-        //HeadJumped
-        charHeadJumpedSprites = new Sprite[1];
-        charHeadJumpedSprites[0] = charSpritesheet[5];
-
-        //TODO important
-        Save();             // speichere Asset (Änderung wird übernommen)
-        //TODO important
-    }
-
-    public void Save()
-    {
-#if UNITY_EDITOR
-        //UnityEditor.EditorUtility.SetDirty(this);                   // vielleicht
-#endif
-    }
-
-    public void SetUnityNetworkPrefab(GameObject prefab)
-    {
-        this.unityNetworkPrefab = prefab;
-    }
-
-    public void SetPrefab(GameObject prefab)
-    {
-        this.charPrefab = prefab;
-    }
-
-}
 
 [System.Serializable]
 public class SmwCharacter : ScriptableObject {
 
-
-	// Awake() wird bei ScriptableObject.Create asugeführt!!!!
-
-//	public SmwCharacter ()
-//	{
-//		Debug.Log(this.ToString() + " konstruktor ()");			// wird auch at Runtime ausgeführt
-//	}
-//	public void Awake ()
-//	{
-//		Debug.Log(this.ToString() + " Awake ()");				// Awake() wird bei ScriptableObject.Create asugeführt!!!!
-//	}
-//	public void Start ()
-//	{
-//		Debug.Log(this.ToString() + " Start ()");
-//	}
-	public void OnEnable()
+	public void Awake ()
 	{
-		Debug.Log("<color=green>" + this.ToString() + " OnEnable () </color>", this);		// OnEnable() wird bei ScriptableObject.Create asugeführt!!!!
-		Check();
+        if (characters != null)
+            return;
+
+        characters = new TeamCharacter[4];
+
+        for (int i=0; i<(int)Teams.count; i++)
+        {
+            characters[i] = new TeamCharacter();
+            characters[i].name = ((Teams)i).ToString();
+        }
+
+        Save();
 	}
+
 
 	void Check()
 	{
-        //for (int i=0; i<characters.Length; i++)
-        //{
-        //    if (characters[i] == null)
-        //    {
-        //        characters[i] = new TeamCharacter();
-        //        Debug.Log(this.ToString() + " Character " + (Teams)i + " created");
-        //    }
-        //}
-        
-        //// UnityEditor.EditorUtility.SetDirty(this);
+
 	}
 
 	public string charName;
@@ -136,7 +46,7 @@ public class SmwCharacter : ScriptableObject {
 	public NetworkPlayer netPlayer;
 	public Player player;
 
-    public TeamCharacter[] characters = new TeamCharacter[4];
+    public TeamCharacter[] characters;
 
     public TeamCharacter currentTeamCharacter;
 

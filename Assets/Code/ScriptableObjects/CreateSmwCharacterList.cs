@@ -6,7 +6,7 @@ using UnityEditor;
 public class CreateSmwCharacterList {
 
 
-	[MenuItem("Assets/Create/SMW Character List SO")]
+	[MenuItem("SMW/Assets/Create/SMW Character List SO")]
 	public static SmwCharacterList Create()
 	{
 		SmwCharacterList asset = ScriptableObject.CreateInstance<SmwCharacterList>();

@@ -5,16 +5,25 @@ using System.Collections.Generic;
 [System.Serializable]
 public class SmwCharacterGenerics : ScriptableObject {
 
+    public bool AllPropertysSet()
+    {
+        if (spawnAnimClip == null) return false;
+        if (protectionAnimClip == null) return false;
+        if (rageAnimClip == null) return false;
+
+        return true;
+    }
+
 	// properties for all characters
 	public AnimationClip spawnAnimClip;
 	public AnimationClip protectionAnimClip;
 	public AnimationClip rageAnimClip;
 
-	// können nicht im inspector zugewiesen werden!
-//	public SpawnStateScript spawnStateScript;
-//	public SpawnDelayStateScript spawnDelayStateScript;
+    // können nicht im inspector zugewiesen werden!
+    //	public SpawnStateScript spawnStateScript;
+    //	public SpawnDelayStateScript spawnDelayStateScript;
 
-		public List<Color> teamColorList;
+    public GameObject frictionSmokeTrailPrefab;
 
 	
 	public Sprite kingSprite;

@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using System.Collections;
-
 using UnityEditor;
 
-public class CreateSmwCharacter : MonoBehaviour {
+public class CreateSmwCharacter {
 
-	[MenuItem("Assets/Create/SMW Character SO")]
+	[MenuItem("SMW/Assets/Create/SMW Character SO")]
 	public static void CreateAsset()
 	{
 		SmwCharacter asset = ScriptableObject.CreateInstance<SmwCharacter>();
@@ -46,3 +46,4 @@ public class CreateSmwCharacter : MonoBehaviour {
 		return asset;
 	}
 }
+#endif
