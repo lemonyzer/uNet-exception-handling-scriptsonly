@@ -299,11 +299,12 @@ public class CharacterEditor : EditorWindow {
         else
             pathRelativeToAssetsPath = "Prefabs/AutoGen Characters";
 
-        if (!AssetTools.CreateFolder(pathRelativeToAssetsPath))
-        {
-            Debug.LogError("Ordner " + pathRelativeToAssetsPath + " konnte nicht erstellt werden");
-            return null;
-        }
+		string createdAssetPath = "";
+		if (!UnityEnhancements.AssetTools.TryCreateFolderWithAssetDatabase (pathRelativeToAssetsPath, out createdAssetPath))
+		{
+			Debug.LogError("Ordner " + pathRelativeToAssetsPath + " konnte nicht erstellt werden");
+			return null;
+		}
 
         //		string pathRelativeToProject = "Assets/" + pathRelativeToAssetsPath;
         string prefabPathRelativeToProject = "Assets/" + pathRelativeToAssetsPath + "/" + charName + "_" + teamId + ".prefab";

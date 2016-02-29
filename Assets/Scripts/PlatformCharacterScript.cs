@@ -267,7 +267,9 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     void OnDrawGizmos()
     {
-
+		if (myGroundStopperCollider == null)
+			return;
+		
         Vector3 center = myGroundStopperCollider.bounds.center;
         Vector3 size = myGroundStopperCollider.size;
         WireCube(center, size, Color.red);

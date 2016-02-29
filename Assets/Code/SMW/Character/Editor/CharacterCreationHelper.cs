@@ -1475,14 +1475,15 @@ public class CharacterCreationHelper : EditorWindow {
 		else
 			pathRelativeToAssetsPath = "Prefabs/AutoGen Characters";
 
-		if (!UnityEnhancements.AssetTools.CreateFolder (pathRelativeToAssetsPath))
+		string createdAssetPath = "";
+		if (!UnityEnhancements.AssetTools.TryCreateFolderWithAssetDatabase (pathRelativeToAssetsPath, out createdAssetPath))
 		{
 			Debug.LogError("Ordner " + pathRelativeToAssetsPath + " konnte nicht erstellt werden");
 			return null;
 		}
 
 //		string pathRelativeToProject = "Assets/" + pathRelativeToAssetsPath;
-		string prefabPathRelativeToProject = "Assets/" + pathRelativeToAssetsPath + "/" + charName + "_" + teamId + ".prefab";
+		string prefabPathRelativeToProject = createdAssetPath + "/" + charName + "_" + teamId + ".prefab";
 
 		UnityEngine.Object emptyObj = PrefabUtility.CreateEmptyPrefab (prefabPathRelativeToProject);
         
