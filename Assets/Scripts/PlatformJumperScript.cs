@@ -37,13 +37,13 @@ public class PlatformJumperScript : MonoBehaviour {
     {
         this.transform = GetComponent<Transform>();
         //spriteRenderer = GetComponent<SpriteRenderer>();
-        //gameController = GameObject.FindGameObjectWithTag(Tags.tag_gameController);
+        //gameController = GameObject.FindGameObjectWithTag(Tags.Instance.tag_gameController);
         //layer = gameController.GetComponent<Layer>();
         myPlatformCharacter = GetComponent<PlatformCharacterScript>(); // check movedirection (manual physics)
         rb2d = GetComponent<Rigidbody2D>(); // check movedirection (unity physics)
 
-        bodyCollider = transform.Find(Tags.name_body).GetComponent<BoxCollider2D>();
-        groundStopper = transform.Find(Tags.name_groundStopper).GetComponent<BoxCollider2D>();
+        bodyCollider = transform.Find(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
+        groundStopper = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
 
     }
 
@@ -107,7 +107,7 @@ public class PlatformJumperScript : MonoBehaviour {
         platformColliderFinderBottomRightPos = playerPosition + new Vector3(+0.75f, -0.75f, 0f);
         //platformColliderIgnoring = Physics2D.OverlapArea(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, jumpOnPlatform);
         platformColliderIgnoringArray[0] = null;
-        int found = Physics2D.OverlapAreaNonAlloc(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, platformColliderIgnoringArray, Layer.whatIsJumpOnPlatform);
+		int found = Physics2D.OverlapAreaNonAlloc(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, platformColliderIgnoringArray, LayerManager.Instance.whatIsJumpOnPlatform);
         //Debug.Log(found);
 
         //if(platformColliderIgnoring != null)
@@ -152,7 +152,7 @@ public class PlatformJumperScript : MonoBehaviour {
         platformColliderFinderBottomRightPos = playerPosition + new Vector3(+bodyCollider.size.x * 0.5f, -2f, 0f);
         //platformColliderConsidering = Physics2D.OverlapArea(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, jumpOnPlatform);
         platformColliderConsideringArray[0] = null;
-        int found2 = Physics2D.OverlapAreaNonAlloc(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, platformColliderConsideringArray, Layer.whatIsJumpOnPlatform);
+			int found2 = Physics2D.OverlapAreaNonAlloc(platformColliderFinderTopLeftPos, platformColliderFinderBottomRightPos, platformColliderConsideringArray, LayerManager.Instance.whatIsJumpOnPlatform);
         //if(platformColliderConsidering != null)
         if (platformColliderConsideringArray[0] != null)
         {

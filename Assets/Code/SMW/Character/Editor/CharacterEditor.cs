@@ -424,7 +424,7 @@ public class CharacterEditor : EditorWindow {
 
 
         // root
-        root = new ChildData(characterSO.charName, Tags.tag_player, Layer.playerLayerName, centerTransformPos);     //TODO Achtung PrefabName und Name können isch unterscheieden!!!
+        root = new ChildData(characterSO.charName, TagManager.Instance.tag_player, LayerManager.Instance.playerLayerName, centerTransformPos);     //TODO Achtung PrefabName und Name können isch unterscheieden!!!
         root.Add(root.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootRenderer, charGenerics.rootRendererSortingLayer);
         root.Add(root.gameObject.AddComponent<Animator>(), true, characterSO.GetRuntimeAnimationController(teamId));        //TODO inspector
         root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 0f, true);    //TODO inspector
@@ -448,89 +448,89 @@ public class CharacterEditor : EditorWindow {
 
 
         // Clone Left
-        ChildData child = new ChildData(Tags.name_cloneLeft, Tags.tag_player, Layer.playerLayerName, leftTransformPos);
+		ChildData child = new ChildData(TagManager.Instance.name_cloneLeft, TagManager.Instance.tag_player_clone, LayerManager.Instance.playerLayerName, leftTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootCloneRenderer, charGenerics.rootCloneRendererSortingLayer);
         child.Add(child.gameObject.AddComponent<CloneSpriteScript>(), true);
         childs.Add(child);
 
         // Clone Right
-        child = new ChildData(Tags.name_cloneRight, Tags.tag_player, Layer.playerLayerName, rightTransformPos);
+		child = new ChildData(TagManager.Instance.name_cloneRight, TagManager.Instance.tag_player_clone, LayerManager.Instance.playerLayerName, rightTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootCloneRenderer, charGenerics.rootCloneRendererSortingLayer);
         child.Add(child.gameObject.AddComponent<CloneSpriteScript>(), true);
         childs.Add(child);
 
         // Clone Top
-        child = new ChildData(Tags.name_CloneTop, Tags.tag_player, Layer.playerLayerName, topTransformPos);
+		child = new ChildData(TagManager.Instance.name_CloneTop, TagManager.Instance.tag_player_clone, LayerManager.Instance.playerLayerName, topTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootCloneRenderer, charGenerics.rootCloneRendererSortingLayer);
         child.Add(child.gameObject.AddComponent<CloneSpriteScript>(), true);
         childs.Add(child);
 
         // Clone Bottom
-        child = new ChildData(Tags.name_CloneBottom, Tags.tag_player, Layer.playerLayerName, bottomTransformPos);
+		child = new ChildData(TagManager.Instance.name_CloneBottom, TagManager.Instance.tag_player_clone, LayerManager.Instance.playerLayerName, bottomTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootCloneRenderer, charGenerics.rootCloneRendererSortingLayer);
         child.Add(child.gameObject.AddComponent<CloneSpriteScript>(), true);
         childs.Add(child);
 
         // Head (cloned)
-        child = new ChildData(Tags.name_head, Tags.tag_head, Layer.headLayerName, headTransformPos);
+        child = new ChildData(TagManager.Instance.name_head, TagManager.Instance.tag_head, LayerManager.Instance.headLayerName, headTransformPos);
         child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, headBoxSize, smartComponentOffset, headIsTrigger, 3);
         childs.Add(child);
 
         //// Feet (cloned)
-        //child = new ChildData (Tags.name_feet, Tags.tag_player, Layer.feetLayerName, feetTransformPos);
+        //child = new ChildData (Tags.Instance.name_feet, Tags.Instance.tag_player, Layer.Instance.feetLayerName, feetTransformPos);
         //child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, feetBoxSize, smartComponentOffset, feetIsTrigger, 3);
         //child.Add(child.gameObject.AddComponent<SendDamageTrigger>(),true);
         //childs.Add (child);
 
         // Body (cloned)
-        child = new ChildData(Tags.name_body, Tags.tag_body, Layer.bodyLayerName, bodyTransformPos);
+        child = new ChildData(TagManager.Instance.name_body, TagManager.Instance.tag_body, LayerManager.Instance.bodyLayerName, bodyTransformPos);
         child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, bodyBoxSize, smartComponentOffset, bodyIsTrigger, 3);
         childs.Add(child);
 
         //// ItemCollector (cloned)
-        //child = new ChildData (Tags.name_itemCollector, Tags.tag_itemCollector, Layer.itemLayerName, itemCollectorTransformPos);
+        //child = new ChildData (Tags.Instance.name_itemCollector, Tags.Instance.tag_itemCollector, Layer.Instance.itemLayerName, itemCollectorTransformPos);
         //child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, itemCollectorBoxSize, smartComponentOffset, itemCollectorIsTrigger, 3);
         //child.Add(child.gameObject.AddComponent<ItemCollectorScript>(),true);
         //childs.Add (child);
 
         //// PowerHitArea (cloned)
-        //child = new ChildData (Tags.name_powerUpHitArea, Tags.tag_powerUpHitArea, Layer.powerUpLayerName, powerHitTransformPos);
+        //child = new ChildData (Tags.Instance.name_powerUpHitArea, Tags.Instance.tag_powerUpHitArea, Layer.Instance.powerUpLayerName, powerHitTransformPos);
         //child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, powerHitBoxSize, smartComponentOffset, powerHitAreaIsTrigger, 3);
         //child.Add(child.gameObject.AddComponent<RageTrigger>(),true);
         //childs.Add (child);
 
         // GroundStopper
-        child = new ChildData(Tags.name_groundStopper, Tags.tag_groundStopper, Layer.groundStopperLayerName, groundStopperTransformPos);
+        child = new ChildData(TagManager.Instance.name_groundStopper, TagManager.Instance.tag_groundStopper, LayerManager.Instance.groundStopperLayerName, groundStopperTransformPos);
         child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, groundStopperBoxSize, smartComponentOffset, groundStopperIsTrigger, 1);
         childs.Add(child);
 
         // King
-        child = new ChildData(Tags.name_king, Tags.tag_body, Layer.defaultLayerName, kingTransformPos);
+        child = new ChildData(TagManager.Instance.name_king, TagManager.Instance.tag_body, LayerManager.Instance.defaultLayerName, kingTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), false, charGenerics.kingSprite, charGenerics.color_kingRenderer, charGenerics.kingRendererSortingLayer);
         childs.Add(child);
 
         // CurrentEstimatedPosOnServer
-        child = new ChildData(Tags.name_CurrentEstimatedPosOnServer, Tags.tag_CurrentEstimatedPosOnServer, Layer.defaultLayerName, centerTransformPos);
+        child = new ChildData(TagManager.Instance.name_CurrentEstimatedPosOnServer, TagManager.Instance.tag_CurrentEstimatedPosOnServer, LayerManager.Instance.defaultLayerName, centerTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_currentEstimatedPosOnServer, charGenerics.currentEstimatedPosOnServerSortingLayer);
         childs.Add(child);
 
         // LastRecvedPos
-        child = new ChildData(Tags.name_lastReceivedPos, Tags.tag_lastReceivedPos, Layer.defaultLayerName, centerTransformPos);
+        child = new ChildData(TagManager.Instance.name_lastReceivedPos, TagManager.Instance.tag_lastReceivedPos, LayerManager.Instance.defaultLayerName, centerTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_LastRecvedPos, charGenerics.lastRecvdPosRendererSortingLayer);
         childs.Add(child);
 
         // PredictedPosSimulatedWithLastInput
-        child = new ChildData(Tags.name_PredictedPosSimulatedWithLastInput, Tags.tag_PredictedPosSimulatedWithLastInput, Layer.defaultLayerName, centerTransformPos);
+        child = new ChildData(TagManager.Instance.name_PredictedPosSimulatedWithLastInput, TagManager.Instance.tag_PredictedPosSimulatedWithLastInput, LayerManager.Instance.defaultLayerName, centerTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_PredictedPosSimulatedWithLastInput, charGenerics.preSimPosRendererSortingLayer);
         childs.Add(child);
 
         // PredictedPosCalculatedWithLastInput
-        child = new ChildData(Tags.name_PredictedPosCalculatedWithLastInput, Tags.tag_PredictedPosCalculatedWithLastInput, Layer.defaultLayerName, centerTransformPos);
+        child = new ChildData(TagManager.Instance.name_PredictedPosCalculatedWithLastInput, TagManager.Instance.tag_PredictedPosCalculatedWithLastInput, LayerManager.Instance.defaultLayerName, centerTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_PredictedPosCalculatedWithLastInput, charGenerics.preCalclastRecvdPosRendererSortingLayer);
         childs.Add(child);
 
         // IceWalled
-        child = new ChildData(Tags.name_iceWalled, Tags.tag_iceWalled, Layer.defaultLayerName, centerTransformPos);
+        child = new ChildData(TagManager.Instance.name_iceWalled, TagManager.Instance.tag_iceWalled, LayerManager.Instance.defaultLayerName, centerTransformPos);
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, null, charGenerics.color_iceWallRenderer, charGenerics.iceWalledRendererSortingLayer);
         child.Add(child.gameObject.AddComponent<Animator>(), true, charGenerics.iceWandAnimatorController);
         childs.Add(child);

@@ -14,12 +14,12 @@ public class PlatformCharacterScript : NetworkBehaviour {
     PlatformUserControl inputScript;
 
     [SerializeField]
-    ParticleSystem frictionSmoke;
+    ParticleSystem frictionSmoke = null;
 
     [SyncVar] [SerializeField]
     public bool grounded = false;
 
-    bool walled = false;
+//    bool walled = false;
     public Vector2 wallCheckPosition = new Vector2(0.5f, 0); // Position, where the the Wall will be checked
 
     [SerializeField]
@@ -60,8 +60,8 @@ public class PlatformCharacterScript : NetworkBehaviour {
 		this.transform = GetComponent<Transform>();
         anim = GetComponent<Animator>();
         AnimatorScriptsInitialisierung();
-        myGroundStopperCollider = transform.Find(Tags.name_groundStopper).GetComponent<BoxCollider2D>();
-        bodyCollider2D = transform.FindChild(Tags.name_body).GetComponent<BoxCollider2D>();
+		myGroundStopperCollider = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
+        bodyCollider2D = transform.FindChild(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
@@ -333,7 +333,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
         //int overlapCount = Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos, playerColliderBottomRightPos, foundColliderArray, jumpOnPlatform );
         foundColliderArray[0] = null;
-        int numberOfColider = Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, foundColliderArray, Layer.whatIsJumpOnPlatform);
+		int numberOfColider = Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, foundColliderArray, LayerManager.Instance.whatIsJumpOnPlatform);
 
         for (int i=0; i< numberOfColider; i++)
         {
@@ -376,7 +376,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
             platformGrounded = false;
             foundColliderArray[0] = null;
-            Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, foundColliderArray, Layer.whatIsStaticGround);
+			Physics2D.OverlapAreaNonAlloc(playerColliderTopLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, foundColliderArray, LayerManager.Instance.whatIsStaticGround);
             if (foundColliderArray[0] != null)
             {
                 grounded = true;
@@ -409,7 +409,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
     void SimulateAnimation()
     {
         anim.SetBool(HashID.groundedBool, grounded);
-        anim.SetBool(HashID.walledBool, walled);
+//        anim.SetBool(HashID.walledBool, walled);
 
         anim.SetFloat(HashID.hSpeedFloat, rb2d.velocity.x);
         if (facingRight && moveDirection.x < 0)
@@ -487,6 +487,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     public void SetSmwCharacterSO(SmwCharacter characterSO)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+		Debug.LogError ("NotImplementedException !!!");
     }
 }

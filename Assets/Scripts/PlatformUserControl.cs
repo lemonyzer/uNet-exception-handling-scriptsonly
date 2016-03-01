@@ -208,7 +208,7 @@ public class PlatformUserControl : MonoBehaviour {
 
     void InitTouch ()
     {
-        GameObject analogStickGO = GameObject.FindGameObjectWithTag(Tags.guiAnalogStick);
+        GameObject analogStickGO = GameObject.FindGameObjectWithTag(TagManager.Instance.guiAnalogStick);
         if (analogStickGO == null)
         {
             analogStickTexture = (GUITexture)Instantiate(prefabAnalogStickTexture);     // needed? pre-instantiete in hierachie?!
@@ -221,7 +221,7 @@ public class PlatformUserControl : MonoBehaviour {
         analogStickTextureWidth = analogStickTexture.pixelInset.width;
         analogStickTextureHeight = analogStickTexture.pixelInset.height;
 
-        stickTexture = analogStickGO.transform.FindChild(Tags.guiStick).GetComponent<GUITexture>();
+        stickTexture = analogStickGO.transform.FindChild(TagManager.Instance.guiStick).GetComponent<GUITexture>();
 
 
         stickTextureWidth = stickTexture.pixelInset.width;
