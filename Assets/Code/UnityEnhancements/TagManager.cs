@@ -203,6 +203,8 @@ public class TagManager : ScriptableObject {
 	public string tag_PredictedPosV3 = "";
 	public string name_iceWalled = "IceWalled";
 	public string tag_iceWalled = "";
+	public string name_frictionEffect = "FrictionEffect";
+	public string tag_frictionEffect = "";
 
 	/**
 	 * Scene, Level Parts

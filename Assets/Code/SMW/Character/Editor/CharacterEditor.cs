@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
@@ -387,12 +388,13 @@ public class CharacterEditor : EditorWindow {
         Vector3 topTransformPos = new Vector3(0f, topPos, 0f);
         Vector3 bottomTransformPos = new Vector3(0f, bottomPos, 0f);
         Vector3 headTransformPos = new Vector3(0f, 0.3f, 0f);
-        Vector3 feetTransformPos = 			new Vector3(0f,-0.3f,0f);
+        Vector3 feetTransformPos = new Vector3(0f,-0.3f,0f);
         Vector3 bodyTransformPos = new Vector3(0f, 0f, 0f);
         //Vector3 itemCollectorTransformPos = new Vector3(0f,0f,0f);
         //Vector3 powerHitTransformPos = 		new Vector3(0f,0f,0f);
         Vector3 groundStopperTransformPos = new Vector3(0f, -0.25f, 0f);
-        Vector3 kingTransformPos = new Vector3(0f, 0.6f, 0f);
+		Vector3 kingTransformPos = new Vector3(0f, 0.6f, 0f);
+//        Vector3 frictionEffectTransformPos = new Vector3(-0.42f, -0.42f, 0f);
 
         Vector2 headBoxSize = new Vector2(0.7f, 0.25f);
         //Vector2 feetBoxSize = new Vector2(0.7f,0.25f);
@@ -430,7 +432,11 @@ public class CharacterEditor : EditorWindow {
         root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 1f, true);    //TODO inspector
         root.Add(root.gameObject.AddComponent<AudioSource>(), true);
         //root.Add(root.gameObject.AddComponent<RealOwner>(), true);
-        root.Add(root.gameObject.AddComponent<PlatformUserControl>(), true);
+
+		NetworkIdentity netIdScript = root.gameObject.AddComponent<NetworkIdentity> ();
+		netIdScript.localPlayerAuthority = true;
+
+		PlatformUserControl platformUserControl = root.gameObject.AddComponent<PlatformUserControl>();
         PlatformCharacterScript platformCharScript = root.gameObject.AddComponent<PlatformCharacterScript>();
         // build > 0.701
         // add CharSO to CharPrefab
@@ -440,8 +446,12 @@ public class CharacterEditor : EditorWindow {
         //root.Add(root.gameObject.AddComponent<Rage>(), true);
         //root.Add(root.gameObject.AddComponent<Shoot>(), true);
         //root.Add(root.gameObject.AddComponent<Shield>(), true);
-        NetworkedPlayer netPlayerScript = root.gameObject.AddComponent<NetworkedPlayer>();
-        root.Add(netPlayerScript, true);
+		if (networked) {
+			NetworkedPlayer netPlayerScript = root.gameObject.AddComponent<NetworkedPlayer> ();
+			root.Add (netPlayerScript, true);
+			netPlayerScript.AddBehaviour (platformCharScript);
+			netPlayerScript.AddBehaviour (platformUserControl);
+		}
 //        root.Add(root.gameObject.AddComponent<NetworkView>(), true, netPlayerScript);
         //root.Add(root.gameObject.AddComponent<PushSkript>(), false);
         //root.Add(root.gameObject.AddComponent<Bot>(), false);
@@ -534,6 +544,18 @@ public class CharacterEditor : EditorWindow {
         child.Add(child.gameObject.AddComponent<SpriteRenderer>(), true, null, charGenerics.color_iceWallRenderer, charGenerics.iceWalledRendererSortingLayer);
         child.Add(child.gameObject.AddComponent<Animator>(), true, charGenerics.iceWandAnimatorController);
         childs.Add(child);
+
+		// Friction Effect with Prefav
+		GameObject frictionEffectChildGO = GameObject.Instantiate (charGenerics.frictionSmokeTrailPrefab);
+		frictionEffectChildGO.transform.SetParent (root.gameObject.transform);
+		frictionEffectChildGO.name = TagManager.Instance.name_frictionEffect;
+		platformCharScript.FrictionSmoke = frictionEffectChildGO.GetComponent<ParticleSystem> ();
+
+		// Friction Effect manual creation
+//		child = new ChildData (TagManager.Instance.name_frictionEffect, TagManager.Instance.tag_frictionEffect, LayerManager.Instance.defaultLayerName, frictionEffectTransformPos);
+//		foreach (Component c in charGenerics.frictionSmokeTrailPrefab.GetComponents()) {
+//			child.Add(child.gameObject.AddComponent(c));
+//		}
     }
 
 

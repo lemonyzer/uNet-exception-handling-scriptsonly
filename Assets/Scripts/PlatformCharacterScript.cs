@@ -16,6 +16,11 @@ public class PlatformCharacterScript : NetworkBehaviour {
     [SerializeField]
     ParticleSystem frictionSmoke = null;
 
+	public ParticleSystem FrictionSmoke {
+		get { return frictionSmoke; }
+		set { frictionSmoke = value; }
+	}
+
     [SyncVar] [SerializeField]
     public bool grounded = false;
 

@@ -6,7 +6,13 @@ using System.Collections.Generic;
 public class NetworkedPlayer : NetworkBehaviour {
 
     [SerializeField]
-	List<Behaviour> localEnabledScripts = null;
+	List<Behaviour> localEnabledScripts = new List<Behaviour>();
+
+	public void AddBehaviour (Behaviour script)
+	{
+		localEnabledScripts.Add (script);
+		script.enabled = false;
+	}
 
     public override void OnStartLocalPlayer()
     {
