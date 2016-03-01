@@ -387,7 +387,7 @@ public class CharacterEditor : EditorWindow {
         Vector3 topTransformPos = new Vector3(0f, topPos, 0f);
         Vector3 bottomTransformPos = new Vector3(0f, bottomPos, 0f);
         Vector3 headTransformPos = new Vector3(0f, 0.3f, 0f);
-        //Vector3 feetTransformPos = 			new Vector3(0f,-0.3f,0f);
+        Vector3 feetTransformPos = 			new Vector3(0f,-0.3f,0f);
         Vector3 bodyTransformPos = new Vector3(0f, 0f, 0f);
         //Vector3 itemCollectorTransformPos = new Vector3(0f,0f,0f);
         //Vector3 powerHitTransformPos = 		new Vector3(0f,0f,0f);
@@ -427,7 +427,7 @@ public class CharacterEditor : EditorWindow {
         root = new ChildData(characterSO.charName, TagManager.Instance.tag_player, LayerManager.Instance.playerLayerName, centerTransformPos);     //TODO Achtung PrefabName und Name können isch unterscheieden!!!
         root.Add(root.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootRenderer, charGenerics.rootRendererSortingLayer);
         root.Add(root.gameObject.AddComponent<Animator>(), true, characterSO.GetRuntimeAnimationController(teamId));        //TODO inspector
-        root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 0f, true);    //TODO inspector
+        root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 1f, true);    //TODO inspector
         root.Add(root.gameObject.AddComponent<AudioSource>(), true);
         //root.Add(root.gameObject.AddComponent<RealOwner>(), true);
         root.Add(root.gameObject.AddComponent<PlatformUserControl>(), true);
@@ -442,7 +442,7 @@ public class CharacterEditor : EditorWindow {
         //root.Add(root.gameObject.AddComponent<Shield>(), true);
         NetworkedPlayer netPlayerScript = root.gameObject.AddComponent<NetworkedPlayer>();
         root.Add(netPlayerScript, true);
-        root.Add(root.gameObject.AddComponent<NetworkView>(), true, netPlayerScript);
+//        root.Add(root.gameObject.AddComponent<NetworkView>(), true, netPlayerScript);
         //root.Add(root.gameObject.AddComponent<PushSkript>(), false);
         //root.Add(root.gameObject.AddComponent<Bot>(), false);
 
@@ -477,10 +477,10 @@ public class CharacterEditor : EditorWindow {
         childs.Add(child);
 
         //// Feet (cloned)
-        //child = new ChildData (Tags.Instance.name_feet, Tags.Instance.tag_player, Layer.Instance.feetLayerName, feetTransformPos);
+		child = new ChildData (TagManager.Instance.name_feet, TagManager.Instance.tag_player, LayerManager.Instance.feetLayerName, feetTransformPos);
         //child.Add(child.gameObject.AddComponent<BoxCollider2D>(), true, feetBoxSize, smartComponentOffset, feetIsTrigger, 3);
         //child.Add(child.gameObject.AddComponent<SendDamageTrigger>(),true);
-        //childs.Add (child);
+        childs.Add (child);
 
         // Body (cloned)
         child = new ChildData(TagManager.Instance.name_body, TagManager.Instance.tag_body, LayerManager.Instance.bodyLayerName, bodyTransformPos);

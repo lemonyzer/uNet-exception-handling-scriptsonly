@@ -35,20 +35,23 @@ public class PlatformJumperScript : MonoBehaviour {
 
     void Awake ()
     {
-        this.transform = GetComponent<Transform>();
-        //spriteRenderer = GetComponent<SpriteRenderer>();
-        //gameController = GameObject.FindGameObjectWithTag(Tags.Instance.tag_gameController);
-        //layer = gameController.GetComponent<Layer>();
-        myPlatformCharacter = GetComponent<PlatformCharacterScript>(); // check movedirection (manual physics)
-        rb2d = GetComponent<Rigidbody2D>(); // check movedirection (unity physics)
 
-        bodyCollider = transform.Find(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
-        groundStopper = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
 
     }
 
     // Use this for initialization
     void Start () {
+		
+		this.transform = GetComponent<Transform>();
+		//spriteRenderer = GetComponent<SpriteRenderer>();
+		//gameController = GameObject.FindGameObjectWithTag(Tags.Instance.tag_gameController);
+		//layer = gameController.GetComponent<Layer>();
+		myPlatformCharacter = GetComponent<PlatformCharacterScript>(); // check movedirection (manual physics)
+		rb2d = GetComponent<Rigidbody2D>(); // check movedirection (unity physics)
+
+		bodyCollider = transform.Find(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
+		groundStopper = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
+
         CalculateColliderEdges();
     }
 

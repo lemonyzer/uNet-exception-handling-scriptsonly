@@ -57,16 +57,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     void Awake ()
     {
-		this.transform = GetComponent<Transform>();
-        anim = GetComponent<Animator>();
-        AnimatorScriptsInitialisierung();
-		myGroundStopperCollider = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
-        bodyCollider2D = transform.FindChild(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        rb2d = GetComponent<Rigidbody2D>();
-
-        inputScript = GetComponent<PlatformUserControl>();
     }
 
     void AnimatorScriptsInitialisierung()
@@ -90,7 +81,16 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     // Use this for initialization
     void Start () {
-	
+		this.transform = GetComponent<Transform>();
+		anim = GetComponent<Animator>();
+		AnimatorScriptsInitialisierung();
+		myGroundStopperCollider = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
+		bodyCollider2D = transform.FindChild(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
+
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		rb2d = GetComponent<Rigidbody2D>();
+
+		inputScript = GetComponent<PlatformUserControl>();
 	}
 	
 	// Update is called once per frame
@@ -186,23 +186,36 @@ public class PlatformCharacterScript : NetworkBehaviour {
         // 0.5 = half player size (pivot.x)
         // if players pos < leftborder+0.5
         // beam to rightborder-0.5
-        if (playerPosition.x < -10.5f)
-        {
-            playerPosition.x += 20f;
-        }
-        else if (playerPosition.x > 10.5f)
-        {
-            playerPosition.x -= 20f;
-        }
 
-        if (playerPosition.y < -7.5f)
-        {
-            playerPosition.y += 15f;
-        }
-        else if (playerPosition.y > 7.5f)
-        {
-            playerPosition.y -= 15f;
-        }
+		while (playerPosition.x <= - 10.5f)
+			playerPosition.x += 20f;
+
+		while (playerPosition.x > 10.5f)
+			playerPosition.x -= 20f;
+
+		while (playerPosition.y <= - 7.5f)
+			playerPosition.y += 15f;
+
+		while (playerPosition.y > 7.5f)
+			playerPosition.y -= 15f;
+
+//        if (playerPosition.x < -10.5f)
+//        {
+//            playerPosition.x += 20f;
+//        }
+//        else if (playerPosition.x > 10.5f)
+//        {
+//            playerPosition.x -= 20f;
+//        }
+//
+//        if (playerPosition.y < -7.5f)
+//        {
+//            playerPosition.y += 15f;
+//        }
+//        else if (playerPosition.y > 7.5f)
+//        {
+//            playerPosition.y -= 15f;
+//        }
 
         if (useUnityPhysics)
             rb2d.position = playerPosition;

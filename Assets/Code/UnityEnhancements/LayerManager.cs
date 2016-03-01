@@ -195,6 +195,7 @@ public class LayerManager : ScriptableObject {
 
 	void OnEnable ()
 	{
+		Debug.Log (this.ToString () + " initialized");
 		if (Instance == null)
 			Instance = this;
 	}

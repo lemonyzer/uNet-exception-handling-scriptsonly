@@ -1623,7 +1623,7 @@ public class CharacterCreationHelper : EditorWindow {
 		//root.Add(root.gameObject.AddComponent<Shield>(), true);
 		NetworkedPlayer netPlayerScript = root.gameObject.AddComponent<NetworkedPlayer>();
 		root.Add(netPlayerScript, true);
-		root.Add(root.gameObject.AddComponent<NetworkView>(), true, netPlayerScript);
+//		root.Add(root.gameObject.AddComponent<NetworkView>(), true, netPlayerScript);
 		//root.Add(root.gameObject.AddComponent<PushSkript>(), false);
 		//root.Add(root.gameObject.AddComponent<Bot>(), false);
 
