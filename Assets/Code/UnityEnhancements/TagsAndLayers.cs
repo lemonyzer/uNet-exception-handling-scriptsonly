@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 using System.Collections;
 
@@ -218,3 +219,4 @@ namespace UnityEnhancements
 	}
 }
 
+#endif

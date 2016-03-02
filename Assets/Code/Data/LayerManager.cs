@@ -4,9 +4,9 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEnhancements;
 
 #if UNITY_EDITOR
+using UnityEnhancements;
 using UnityEditor;
 [CustomEditor(typeof(LayerManager))]
 public class LayerManagerEditor : Editor {

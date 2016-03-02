@@ -58,7 +58,19 @@ public class PlatformCharacterScript : NetworkBehaviour {
     private SpriteRenderer spriteRenderer;
     public SpriteRenderer SpriteRenderer { get { return spriteRenderer; } set { spriteRenderer = value; } }
 
+	public void AssignReferencesAndDependencies ()
+	{
+		this.transform = GetComponent<Transform>();
+		anim = GetComponent<Animator>();
+		AnimatorScriptsInitialisierung();
+		myGroundStopperCollider = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
+		bodyCollider2D = transform.FindChild(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
 
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		rb2d = GetComponent<Rigidbody2D>();
+
+		inputScript = GetComponent<PlatformUserControl>();
+	}
 
     void Awake ()
     {
@@ -86,16 +98,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     // Use this for initialization
     void Start () {
-		this.transform = GetComponent<Transform>();
-		anim = GetComponent<Animator>();
-		AnimatorScriptsInitialisierung();
-		myGroundStopperCollider = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
-		bodyCollider2D = transform.FindChild(TagManager.Instance.name_body).GetComponent<BoxCollider2D>();
-
-		spriteRenderer = GetComponent<SpriteRenderer>();
-		rb2d = GetComponent<Rigidbody2D>();
-
-		inputScript = GetComponent<PlatformUserControl>();
+		AssignReferencesAndDependencies ();
 	}
 	
 	// Update is called once per frame

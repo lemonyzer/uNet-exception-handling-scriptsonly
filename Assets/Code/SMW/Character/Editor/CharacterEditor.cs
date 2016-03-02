@@ -390,6 +390,11 @@ public class CharacterEditor : EditorWindow {
             // currentChildGO finish
         }
 
+		// Initialisiere Referenzen / Dependencies
+		// TODO
+		root.gameObject.BroadcastMessage ("AssignReferencesAndDependencies", SendMessageOptions.DontRequireReceiver);
+
+
         return root.gameObject;
     }
 
@@ -476,7 +481,7 @@ public class CharacterEditor : EditorWindow {
 
 			NetworkTransform netTransform = root.gameObject.AddComponent<NetworkTransform> ();
 			netTransform.transformSyncMode = NetworkTransform.TransformSyncMode.SyncRigidbody2D;
-			netTransform.movementTheshold = (float) 0.00100f;
+			netTransform.movementTheshold = (float) 0.001f;
 			netTransform.snapThreshold = 5f;
 			float sendRate = 20.0f;							// amount per seconds
 			netTransform.sendInterval = 1.0f / sendRate;	// time in seconds

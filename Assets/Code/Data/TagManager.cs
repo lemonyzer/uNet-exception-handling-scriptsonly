@@ -5,12 +5,10 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+
 #if UNITY_EDITOR
 using UnityEnhancements;
 using System.Reflection;
-#endif
-
-#if UNITY_EDITOR
 using UnityEditor;
 [CustomEditor(typeof(TagManager))]
 public class TagManagerEditor : Editor {

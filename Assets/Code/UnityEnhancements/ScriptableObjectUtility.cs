@@ -1,6 +1,6 @@
 ﻿#define DEBUGGING
 #undef DEBUGGING
-
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -69,4 +69,4 @@ namespace UnityEnhancements
         }
     }
 }
- 
+#endif
