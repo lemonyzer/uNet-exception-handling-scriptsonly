@@ -88,7 +88,7 @@ public class ChildData
 		}
 	}
 	
-	public void Add(Animator anim, bool enabled, RuntimeAnimatorController runtimeAnimatorController)
+	public Animator Add(Animator anim, bool enabled, RuntimeAnimatorController runtimeAnimatorController)
 	{
 		for(int i=0; i < 1; i++)
 		{
@@ -101,6 +101,7 @@ public class ChildData
 			}
 			//current smart Add finish
 		}
+		return anim;
 	}
 
 	public void Add(NetworkView networkView, bool enabled, NetworkedPlayer netPlayerScript)

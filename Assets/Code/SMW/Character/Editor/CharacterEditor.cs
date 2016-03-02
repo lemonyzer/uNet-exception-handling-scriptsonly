@@ -172,9 +172,25 @@ public class CharacterEditor : EditorWindow {
         }
     }
 
+	bool netToggle = true;
+
     void OnGUI_PrefabEditor()
     {
-        networked = EditorGUILayout.Toggle("for Network", networked);
+		EditorGUI.BeginChangeCheck ();
+		netToggle = EditorGUILayout.Toggle("for Network", netToggle);
+		if (netToggle != networked)
+			GUI.changed = true;
+
+		networked = netToggle;
+
+		if (EditorGUI.EndChangeCheck())
+			if (networked)
+				w_netManager = FindObjectOfType<NetworkManager> ();
+
+		if (networked) {
+			w_netManager = EditorGUILayout.ObjectField("NetworkManager", w_netManager, typeof(NetworkManager), true) as NetworkManager;
+		}
+
 
         if (allowedToCreateCharacterPrefab(selectedTeam))
             GUI.enabled = true;
@@ -185,8 +201,12 @@ public class CharacterEditor : EditorWindow {
         if (GUILayout.Button("create Prefab"))
         {
             // create Prefab
-            CreateCharacterPrefab(window_SmwCharacter, selectedTeam, window_SmwCharacterGenerics, window_KeepCreatedPrefabsInScene);
+            GameObject prefab = CreateCharacterPrefab(window_SmwCharacter, selectedTeam, window_SmwCharacterGenerics, window_KeepCreatedPrefabsInScene);
+			// set in net Manager
+			if (w_netManager != null)
+				w_netManager.playerPrefab = prefab;
         }
+
     }
 
     bool SpriteIsPrepared(TextureImporter myImporter)
@@ -424,11 +444,10 @@ public class CharacterEditor : EditorWindow {
         //bool powerHitAreaIsTrigger = true;
         bool groundStopperIsTrigger = false;
 
-
         // root
         root = new ChildData(characterSO.charName, TagManager.Instance.tag_player, LayerManager.Instance.playerLayerName, centerTransformPos);     //TODO Achtung PrefabName und Name können isch unterscheieden!!!
         root.Add(root.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootRenderer, charGenerics.rootRendererSortingLayer);
-        root.Add(root.gameObject.AddComponent<Animator>(), true, characterSO.GetRuntimeAnimationController(teamId));        //TODO inspector
+		Animator anim = root.Add(root.gameObject.AddComponent<Animator>(), true, characterSO.GetRuntimeAnimationController(teamId));        //TODO inspector
         root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 1f, true);    //TODO inspector
         root.Add(root.gameObject.AddComponent<AudioSource>(), true);
         //root.Add(root.gameObject.AddComponent<RealOwner>(), true);
@@ -442,7 +461,7 @@ public class CharacterEditor : EditorWindow {
         // add CharSO to CharPrefab
         platformCharScript.SetSmwCharacterSO(characterSO);
         root.Add(platformCharScript, true);
-        root.Add(root.gameObject.AddComponent<PlatformJumperScript>(), true);
+        root.Add(root.gameObject.AddComponent<PlatformJumperScript>(), false);			// useUnityPhysics
         //root.Add(root.gameObject.AddComponent<Rage>(), true);
         //root.Add(root.gameObject.AddComponent<Shoot>(), true);
         //root.Add(root.gameObject.AddComponent<Shield>(), true);
@@ -451,6 +470,21 @@ public class CharacterEditor : EditorWindow {
 			root.Add (netPlayerScript, true);
 			netPlayerScript.AddBehaviour (platformCharScript);
 			netPlayerScript.AddBehaviour (platformUserControl);
+
+			NetworkAnimator netAnim = root.gameObject.AddComponent<NetworkAnimator> ();
+			netAnim.animator = anim;
+
+			NetworkTransform netTransform = root.gameObject.AddComponent<NetworkTransform> ();
+			netTransform.transformSyncMode = NetworkTransform.TransformSyncMode.SyncRigidbody2D;
+			netTransform.movementTheshold = (float) 0.00100f;
+			netTransform.snapThreshold = 5f;
+			float sendRate = 20.0f;							// amount per seconds
+			netTransform.sendInterval = 1.0f / sendRate;	// time in seconds
+			netTransform.syncRotationAxis = NetworkTransform.AxisSyncMode.None;
+			//netTransform.syncRotationAxis = NetworkTransform.AxisSyncMode.AxisZ;
+			netTransform.interpolateRotation = 1f;
+			netTransform.rotationSyncCompression = NetworkTransform.CompressionSyncMode.High;
+
 		}
 //        root.Add(root.gameObject.AddComponent<NetworkView>(), true, netPlayerScript);
         //root.Add(root.gameObject.AddComponent<PushSkript>(), false);
@@ -558,6 +592,7 @@ public class CharacterEditor : EditorWindow {
 //		}
     }
 
+	NetworkManager w_netManager;
 
     GUIStyle myFoldoutStyle;
     private Vector2 sliderPosition;
