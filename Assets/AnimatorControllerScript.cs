@@ -9,14 +9,22 @@ public class AnimatorControllerScript : MonoBehaviour {
 	Vector2 moveDirection = Vector2.zero;
 	Vector2 moveForce = new Vector2 (50f, 100f);						// Linear Drag = 5
 
+    [SerializeField]
+    float linearDrag = 0.9f;
+
+    [SerializeField]
+    Vector2 velocity = Vector2.zero;
+
 	void Awake () {
 		anim = this.GetComponent<Animator> ();
 		rb2d = this.GetComponent<Rigidbody2D> ();
 	}
 
 	// Use this for initialization
-	void Start () {
-	
+	void FixedUpdate () {
+        velocity = rb2d.velocity;
+        velocity.x *= linearDrag;
+        rb2d.velocity = velocity;
 	}
 
 	bool isAlive = false;
