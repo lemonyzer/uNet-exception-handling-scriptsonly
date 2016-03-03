@@ -9,11 +9,12 @@ public class AnimatorControllerScript : MonoBehaviour {
 	Vector2 moveDirection = Vector2.zero;
 	Vector2 moveForce = new Vector2 (50f, 100f);						// Linear Drag = 5
 
-    [SerializeField]
-    float linearDrag = 0.9f;
+	Vector2 velocity = Vector2.zero;
 
-    [SerializeField]
-    Vector2 velocity = Vector2.zero;
+	[SerializeField]
+	bool useCustomDrag = false;
+	[SerializeField]
+	float customDrag = 0.9f;
 
 	void Awake () {
 		anim = this.GetComponent<Animator> ();
@@ -22,9 +23,12 @@ public class AnimatorControllerScript : MonoBehaviour {
 
 	// Use this for initialization
 	void FixedUpdate () {
-        velocity = rb2d.velocity;
-        velocity.x *= linearDrag;
-        rb2d.velocity = velocity;
+
+		if (useCustomDrag) {
+			velocity = rb2d.velocity;
+			velocity.x *= customDrag;
+			rb2d.velocity = velocity;
+		}
 	}
 
 	bool isAlive = false;
@@ -73,6 +77,86 @@ public class AnimatorControllerScript : MonoBehaviour {
 
 		CheckBeam();
 
+//		if (InputAndVelocitySameDirection (inputDirection.x, rb2d.velocity.x)) {
+//
+//		}
+		bool skiddingLastFrame = isSkidding;
+		isSkidding = CheckSkidding (inputDirection.x, rb2d.velocity.x);
+
+		if (isSkidding != skiddingLastFrame)
+			if (isSkidding)
+				skiddingTrigger = true;			// set flag
+		
+		
+		if (skiddingTrigger) {					// check Trigger (and remove flag)
+			frictionSmoke.Play ();
+			audioSource.PlayOneShot (skidClip);
+			skiddingTrigger = false;
+		}
+
+		// Flip
+		if (inputDirection.x < 0)
+			localScale.x = -1f;
+		else if (inputDirection.x > 0)
+			localScale.x = 1f;
+		
+		transform.localScale = localScale;
+
+		// Flip Sprite only
+//		SpriteRenderer spriteRender;
+//		spriteRender.flipX =
+
+		if (!isSkidding) {
+			frictionSmoke.Stop ();
+		}
+
+	}
+
+	Vector3 localScale = Vector3.one;
+
+	[SerializeField]
+	bool isSkidding = false;
+	[SerializeField]
+	bool skiddingTrigger = false;
+
+	[SerializeField]
+	AudioClip skidClip;
+
+	[SerializeField]
+	AudioSource audioSource;
+
+	[SerializeField]
+	ParticleSystem frictionSmoke = null;
+
+	public ParticleSystem FrictionSmoke {
+		get { return frictionSmoke; }
+		set { frictionSmoke = value; }
+	}
+
+	bool CheckSkidding (float inputX, float velocityX)
+	{
+		if (Mathf.Abs (inputX) > 0.1f) {
+			// Input == (Rechts oder Links)
+
+			if (InputAndVelocitySameDirection (inputX, velocityX)) {
+				return false;
+			} else {
+				//
+				return true;
+			}
+
+		} else {
+			// keine Eingabe
+			return false;
+		}
+			
+	}
+
+	bool InputAndVelocitySameDirection (float inputX, float velocityX) 
+	{
+		if (Mathf.Sign (inputX) == Mathf.Sign (velocityX))
+			return true;
+		return false;
 	}
 
 	bool beamEnabled = true;

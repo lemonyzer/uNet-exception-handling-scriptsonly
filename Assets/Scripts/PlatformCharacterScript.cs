@@ -144,11 +144,6 @@ public class PlatformCharacterScript : NetworkBehaviour {
             // ... add a force to the player.
             rb2d.AddForce(Vector2.right * moveDirection.x * rigibodyMoveForce);
 
-        if (grounded)
-        {
-
-        }
-
         if (grounded && (rb2d.velocity.y <= 0.1f))
         {
             //if (CrossPlatformInputManager.GetButton("Jump"))
@@ -452,8 +447,6 @@ public class PlatformCharacterScript : NetworkBehaviour {
 //        anim.SetBool(HashID.walledBool, walled);
 
         anim.SetFloat(HashID.hSpeedFloat, rb2d.velocity.x);
-
-
         if (facingRight && moveDirection.x < 0)
         {
             Flip(false);
