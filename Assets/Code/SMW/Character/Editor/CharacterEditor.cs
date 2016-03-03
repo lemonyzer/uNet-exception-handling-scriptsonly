@@ -453,7 +453,10 @@ public class CharacterEditor : EditorWindow {
         root = new ChildData(characterSO.charName, TagManager.Instance.tag_player, LayerManager.Instance.playerLayerName, centerTransformPos);     //TODO Achtung PrefabName und Name können isch unterscheieden!!!
         root.Add(root.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId, SmwCharacterAnimation.Idle)[0], charGenerics.color_rootRenderer, charGenerics.rootRendererSortingLayer);
 		Animator anim = root.Add(root.gameObject.AddComponent<Animator>(), true, characterSO.GetRuntimeAnimationController(teamId));        //TODO inspector
-        root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 1f, true);    //TODO inspector
+//		root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 1f, true);    //TODO inspector
+		float gravityScale = 1f;
+		float linearDrag = 3f;
+		root.Add(root.gameObject.AddComponent<Rigidbody2D>(), gravityScale, RigidbodyConstraints2D.FreezeRotation, linearDrag);    //TODO inspector
         root.Add(root.gameObject.AddComponent<AudioSource>(), true);
         //root.Add(root.gameObject.AddComponent<RealOwner>(), true);
 

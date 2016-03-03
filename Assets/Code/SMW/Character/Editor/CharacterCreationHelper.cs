@@ -1608,7 +1608,7 @@ public class CharacterCreationHelper : EditorWindow {
 		root = new ChildData (characterSO.charName, TagManager.Instance.tag_player, LayerManager.Instance.playerLayerName, centerTransformPos);		//TODO Achtung PrefabName und Name können isch unterscheieden!!!
 		root.Add(root.gameObject.AddComponent<SpriteRenderer>(), true, characterSO.GetSprites(teamId,SmwCharacterAnimation.Idle)[0], charGenerics.color_rootRenderer, charGenerics.rootRendererSortingLayer);
 		root.Add(root.gameObject.AddComponent<Animator>(), true, characterSO.GetRuntimeAnimationController(teamId));		//TODO inspector
-		root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 0f, true); 	//TODO inspector
+		root.Add(root.gameObject.AddComponent<Rigidbody2D>(), 0f, RigidbodyConstraints2D.FreezeRotation, 3f); 	//TODO inspector
 		root.Add(root.gameObject.AddComponent<AudioSource>(), true);
 		//root.Add(root.gameObject.AddComponent<RealOwner>(), true);
 		root.Add(root.gameObject.AddComponent<PlatformUserControl>(), true);

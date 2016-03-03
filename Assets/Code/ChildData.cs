@@ -71,7 +71,7 @@ public class ChildData
 		}
 	}
 
-	public void Add(Rigidbody2D rb2d, float gravityScale, bool fixedAngle)
+	public void Add(Rigidbody2D rb2d, float gravityScale, RigidbodyConstraints2D rbConstraints2d, float linearDrag)
 	{
 		for(int i=0; i < 1; i++)
 		{
@@ -79,7 +79,9 @@ public class ChildData
 			{
 				rb2d.gravityScale = gravityScale;
 				//rb2d.fixedAngle = fixedAngle;
-                rb2d.constraints = RigidbodyConstraints2D.FreezeRotation;
+				rb2d.constraints = rbConstraints2d;
+
+				rb2d.drag = linearDrag;
 				
 				//all
 //				rb2d.enabled = enabled;

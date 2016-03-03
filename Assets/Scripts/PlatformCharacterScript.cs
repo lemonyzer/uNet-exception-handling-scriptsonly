@@ -8,7 +8,7 @@ using UnityStandardAssets.CrossPlatformInput;
 public class PlatformCharacterScript : NetworkBehaviour {
 
     //TODO überschreibt vererbung, zum cachen
-    new public Transform transform;
+//    new public Transform transform;
     public Rigidbody2D rb2d;
     [SerializeField]
     PlatformUserControl inputScript;
@@ -42,7 +42,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
     private bool useUnityPhysics = true;
     private float rigibodyMoveForce = 40f; // 7
     private float rigibodyJumpForce = 800f; // 7
-    private float rigibodyMaxSpeed = 7.5f; // 7
+//    private float rigibodyMaxSpeed = 7.5f; // 7
 
     public Vector3 moveDirection = Vector3.zero;
 
@@ -60,7 +60,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
 	public void AssignReferencesAndDependencies ()
 	{
-		this.transform = GetComponent<Transform>();
+//		this.transform = GetComponent<Transform>();
 		anim = GetComponent<Animator>();
 		AnimatorScriptsInitialisierung();
 		myGroundStopperCollider = transform.Find(TagManager.Instance.name_groundStopper).GetComponent<BoxCollider2D>();
@@ -101,10 +101,10 @@ public class PlatformCharacterScript : NetworkBehaviour {
 		AssignReferencesAndDependencies ();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-        
-    }
+//	// Update is called once per frame
+//	void Update () {
+//        
+//    }
 
     void ReadInput ()
     {
@@ -140,7 +140,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
         //moveDirection.x = CrossPlatformInputManager.GetAxis ("Horizontal");
         moveDirection.x = inputScript.GetInputHorizontal ();
         // If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
-        if (moveDirection.x * rb2d.velocity.x < rigibodyMaxSpeed)
+//        if (moveDirection.x * rb2d.velocity.x < rigibodyMaxSpeed)
             // ... add a force to the player.
             rb2d.AddForce(Vector2.right * moveDirection.x * rigibodyMoveForce);
 
@@ -167,15 +167,12 @@ public class PlatformCharacterScript : NetworkBehaviour {
         if (jumpSound != null)
             AudioSource.PlayClipAtPoint(jumpSound, transform.position, 1);              //JumpSound
         else
-            Debug.LogError("jumpSound nicht gesetzt!");
+			Debug.LogError(this.ToString () + "jumpSound nicht gesetzt!");
+		
         if (anim == null)
-        {
-            Debug.LogError("Animator not set");
-        }
+			Debug.LogError(this.ToString () + "Animator not set");
         else
-        {
             anim.SetBool(HashID.groundedBool, false);
-        }
     }
 
     void CheckBeam()
@@ -189,6 +186,8 @@ public class PlatformCharacterScript : NetworkBehaviour {
             playerPosition = rb2d.position;
         else
             playerPosition = transform.position;
+
+		playerPositionBeforeBeam = playerPosition;
 
         // Beam
         // 0.5 = half player size (pivot.x)
@@ -225,10 +224,15 @@ public class PlatformCharacterScript : NetworkBehaviour {
 //            playerPosition.y -= 15f;
 //        }
 
-        if (useUnityPhysics)
-            rb2d.position = playerPosition;
-        else
-            transform.position = playerPosition;
+		if (playerPosition != playerPositionBeforeBeam)
+		{
+			// position has changed
+
+			if (useUnityPhysics)
+				rb2d.MovePosition (playerPosition);
+			else
+				transform.position = playerPosition;
+		}
     }
 
     enum Edge
@@ -277,6 +281,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     //bool useCustomPlatformJumperScript = false;
 
+	Vector2 playerPositionBeforeBeam;
     Vector2 playerPosition;
     Vector2 playerColliderTopLeftPos;
     Vector2 playerColliderBottomRightPos;
@@ -324,6 +329,7 @@ public class PlatformCharacterScript : NetworkBehaviour {
 
     void CheckPosition()
     {
+		bool tempLastGrounded = grounded;
 
         //Rigidbody.position allows you to get and set the position of a Rigidbody using the physics engine. If you change the position of a Rigibody using Rigidbody.position, the transform will be updated after the next physics simulation step. This is faster than updating the position using Transform.position, as the latter will cause all attached Colliders to recalculate their positions relative to the Rigidbody. 
         if (useUnityPhysics)
@@ -343,6 +349,15 @@ public class PlatformCharacterScript : NetworkBehaviour {
         Debug.DrawLine(playerColliderTopRightPos - playerColliderOffset, playerColliderBottomLeftPos + playerColliderOffset, Color.white);
         Debug.DrawLine(playerColliderBottomLeftPos + playerColliderOffset, playerColliderBottomRightPos - playerColliderOffset, Color.white);
 #endif
+
+		if (useUnityPhysics) {
+			if (rb2d.velocity.y > 0) {
+				grounded = false;
+				if (tempLastGrounded != grounded)
+					CmdSyncGrounded(grounded);          // sync only if changed!
+				return;
+			}
+		}
 
         /**
 		 * check if standing on activ jumpPlatform
@@ -387,7 +402,6 @@ public class PlatformCharacterScript : NetworkBehaviour {
         /**
 		 * 	Checking if standing on solid/static groundCollider
 		 **/
-        bool tempLastGrounded = grounded;
         grounded = false;
 
         if (!platformGrounded)
@@ -450,20 +464,22 @@ public class PlatformCharacterScript : NetworkBehaviour {
         if (grounded)
         {
             changedRunDirection = true;
+
             if (anim == null)
-            {
                 Debug.LogError("Animator not set");
-            }
             else
-            {
                 anim.SetTrigger(HashID.changeRunDirectionTrigger);  // Start Change Run Direction Animation
-            }
+			
             if (changeRunDirectionSound != null)
                 AudioSource.PlayClipAtPoint(changeRunDirectionSound, transform.position, 1);                //ChangeDirection
             else
                 Debug.LogError("change run direction sound fehlt!");
 
-            frictionSmoke.Play();
+			if (frictionSmoke != null)
+            	frictionSmoke.Play();
+			else
+				Debug.LogError("frictionSmoke reference fehlt!");
+
         }
 
         // Richtungvariable anpassen
@@ -496,19 +512,21 @@ public class PlatformCharacterScript : NetworkBehaviour {
         Flip(newFacingRight);
     }
 
-    internal void StartBetterSpawnDelay()
+    public void StartBetterSpawnDelay()
     {
-        throw new NotImplementedException();
+		Debug.LogError ("StartBetterSpawnDelay: NotImplementedException !!!");
+//        throw new NotImplementedException();
     }
 
-    internal void Protection()
+	public void Protection()
     {
-        throw new NotImplementedException();
+		Debug.LogError ("Protection: NotImplementedException !!!");
+//        throw new NotImplementedException();
     }
 
     public void SetSmwCharacterSO(SmwCharacter characterSO)
     {
         //throw new NotImplementedException();
-		Debug.LogError ("NotImplementedException !!!");
+		Debug.LogError ("SetSmwCharacterSO: NotImplementedException !!!");
     }
 }
